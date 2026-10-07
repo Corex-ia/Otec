@@ -1,85 +1,138 @@
 'use client';
-
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
-import { motion, useScroll, useTransform, useAnimationControls } from 'motion/react';
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence, useScroll, useTransform } from "motion/react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import {
-  Building2, Users, GraduationCap, Award, CheckCircle,
-  ArrowRight, Sparkles, Target, TrendingUp, BookOpen,
-  Shield, Play, Star, Phone
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
+import {
+  Shield,
+  Award,
+  Star,
+  Users,
+  ArrowRight,
+  GraduationCap,
+  Building2,
+  Target,
+  TrendingUp,
+  CheckCircle,
+  BookOpen,
+  Zap,
+  ChevronLeft,
+  ChevronRight,
+  Play,
+  Image as ImageIcon,
+  UserPlus,
+  Smile,
+} from "lucide-react";
 
-const C = {
+const CorporateColors = {
   primary: '#5D3FD3',
   primaryLight: '#F0ECFF',
   secondary: '#6B5CE7',
   accent: '#FF8C42',
+  accentLight: '#FFF0E6',
   textPrimary: '#1F2937',
   textSecondary: '#6B7280',
   bgLight: '#F9FAFB',
+  bgGradient: 'linear-gradient(135deg, #F0ECFF 0%, #FFF0E6 100%)',
   border: '#E5E7EB',
+  borderLight: 'rgba(229, 231, 235, 0.5)',
+  white: '#FFFFFF',
+  purple: '#9B6DFF',
+  blue: '#4A90E2',
+  pink: '#E63E96',
 };
 
-const fadeInUp = {
-  hidden: { opacity: 0, y: 30 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }
-  }
-};
+// ─── GalleryCarousel ──────────────────────────────────────────────────────────
+function GalleryCarousel() {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
-const staggerChildren = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
-};
+  const fadeInUp = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] }
+    }
+  };
 
-const scaleOnHover = {
-  rest: { scale: 1 },
-  hover: { scale: 1.02, transition: { duration: 0.3, ease: 'easeOut' } }
-};
-
-// ─── TrustedCompanies ────────────────────────────────────────────────────────
-const COMPANIES = [
-  'Ministerio de Bienes Nacionales',
-  'Ministerio de Agricultura',
-  'Programa Quiero mi Barrio',
-  'Subsecretaría de Transportes',
-  'DGAC Chile',
-  'Senado de Chile',
-  'SERNAMEG',
-  'Municipalidad de Santa Bárbara',
-  'Municipalidad de Navidad',
-  'Programa Familias',
-  'Chile Aduanas',
-  'DIPRECA',
-  'Corp. Municipal Punta Arenas',
-  'SEREMI Reg. Metropolitana',
-  'Subsecretaría FFAA',
-];
-
-function TrustedCompanies() {
-  const [isPaused, setIsPaused] = useState(false);
-  const controls = useAnimationControls();
-  const duplicated = [...COMPANIES, ...COMPANIES, ...COMPANIES];
+  const galleryItems = [
+    {
+      type: 'image',
+      url: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=1200&h=600&fit=crop',
+      title: 'Capacitación en Liderazgo Estratégico',
+      description: 'Programa ejecutivo para mandos medios - Ministerio de Agricultura',
+      category: 'Liderazgo'
+    },
+    {
+      type: 'image',
+      url: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1200&h=600&fit=crop',
+      title: 'Taller de Innovación Digital',
+      description: 'Transformación digital para equipos públicos - DGAC',
+      category: 'Tecnología'
+    },
+    {
+      type: 'image',
+      url: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=1200&h=600&fit=crop',
+      title: 'Programa de Trabajo en Equipo',
+      description: 'Fortalecimiento de equipos de alto rendimiento - SERNAMEG',
+      category: 'Soft Skills'
+    },
+    {
+      type: 'image',
+      url: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=1200&h=600&fit=crop',
+      title: 'Gestión de Proyectos',
+      description: 'Metodologías ágiles aplicadas al sector público - Senado de Chile',
+      category: 'Gestión'
+    },
+    {
+      type: 'image',
+      url: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=1200&h=600&fit=crop',
+      title: 'Campus Virtual en Acción',
+      description: 'Plataforma e-learning implementada - Programa Familias',
+      category: 'E-Learning'
+    },
+    {
+      type: 'image',
+      url: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=1200&h=600&fit=crop',
+      title: 'Certificación de Participantes',
+      description: 'Entrega de certificados SENCE - Municipalidad de Santa Bárbara',
+      category: 'Certificación'
+    }
+  ];
 
   useEffect(() => {
-    if (!isPaused) {
-      controls.start({
-        x: [0, -(220 * COMPANIES.length)],
-        transition: {
-          x: { repeat: Infinity, repeatType: 'loop', duration: COMPANIES.length * 3.5, ease: 'linear' },
-        },
-      });
-    } else {
-      controls.stop();
-    }
-  }, [isPaused, controls]);
+    if (!isAutoPlaying) return;
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % galleryItems.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [isAutoPlaying, galleryItems.length]);
+
+  const goToNext = () => {
+    setCurrentIndex((prev) => (prev + 1) % galleryItems.length);
+    setIsAutoPlaying(false);
+  };
+
+  const goToPrevious = () => {
+    setCurrentIndex((prev) => (prev - 1 + galleryItems.length) % galleryItems.length);
+    setIsAutoPlaying(false);
+  };
+
+  const goToSlide = (index: number) => {
+    setCurrentIndex(index);
+    setIsAutoPlaying(false);
+  };
+
+  const currentItem = galleryItems[currentIndex];
 
   return (
     <motion.section
@@ -89,418 +142,1480 @@ function TrustedCompanies() {
       whileInView="visible"
       viewport={{ once: true }}
     >
-      <div className="absolute inset-0 opacity-5 pointer-events-none">
-        <div className="absolute top-0 right-0 w-96 h-96 rounded-full blur-3xl" style={{ backgroundColor: C.primary }} />
-        <div className="absolute bottom-0 left-0 w-96 h-96 rounded-full blur-3xl" style={{ backgroundColor: C.accent }} />
+      <div className="absolute inset-0 opacity-5">
+        <div
+          className="absolute top-0 left-1/4 w-96 h-96 rounded-full blur-3xl"
+          style={{ backgroundColor: CorporateColors.primary }}
+        />
+        <div
+          className="absolute bottom-0 right-1/4 w-96 h-96 rounded-full blur-3xl"
+          style={{ backgroundColor: CorporateColors.accent }}
+        />
       </div>
 
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
         <motion.div className="text-center mb-12" variants={fadeInUp}>
           <Badge
             className="mb-4 text-sm px-4 py-2"
-            style={{ background: `linear-gradient(135deg, ${C.primary} 0%, ${C.secondary} 100%)`, color: 'white', border: 'none' }}
+            style={{
+              background: `linear-gradient(135deg, ${CorporateColors.primary} 0%, ${CorporateColors.accent} 100%)`,
+              color: 'white',
+              border: 'none'
+            }}
           >
-            Nuestros Clientes
+            Nuestro Trabajo
           </Badge>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4" style={{ color: C.primary }}>
-            Instituciones que Han Confiado en Nosotros
+
+          <h2
+            className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6"
+            style={{ color: CorporateColors.primary }}
+          >
+            Cursos que Hemos Impartido
           </h2>
-          <p className="text-lg md:text-xl max-w-3xl mx-auto" style={{ color: C.textSecondary }}>
-            Organismos públicos y empresas de diversos sectores han transformado sus equipos
-            con nuestras soluciones de capacitación acreditadas por SENCE
+
+          <p
+            className="text-lg md:text-xl max-w-3xl mx-auto"
+            style={{ color: CorporateColors.textSecondary }}
+          >
+            Conoce algunos de los programas de capacitación que hemos ejecutado exitosamente para instituciones públicas y empresas privadas
           </p>
         </motion.div>
 
-        <motion.div
-          variants={fadeInUp}
-          className="mt-12 overflow-hidden"
-          onMouseEnter={() => setIsPaused(true)}
-          onMouseLeave={() => setIsPaused(false)}
-        >
-          <motion.div className="flex gap-6" animate={controls} style={{ width: 'fit-content' }}>
-            {duplicated.map((name, index) => (
+        <motion.div className="relative max-w-6xl mx-auto" variants={fadeInUp}>
+          <div
+            className="relative rounded-2xl overflow-hidden"
+            style={{
+              height: '500px',
+              boxShadow: '0 20px 50px rgba(0, 0, 0, 0.15)'
+            }}
+          >
+            <AnimatePresence mode="wait">
               <motion.div
-                key={`${name}-${index}`}
-                className="flex-shrink-0 group cursor-pointer"
-                style={{ width: '210px' }}
-                whileHover={{ scale: 1.05, transition: { duration: 0.3 } }}
+                key={currentIndex}
+                className="absolute inset-0"
+                initial={{ opacity: 0, scale: 1.1 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.5 }}
               >
+                <img
+                  src={currentItem.url}
+                  alt={currentItem.title}
+                  className="w-full h-full object-cover"
+                />
+
                 <div
-                  className="relative rounded-xl border-2 flex items-center justify-center p-5 transition-all duration-300"
-                  style={{ borderColor: C.border, backgroundColor: 'white', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)', minHeight: '80px' }}
-                >
+                  className="absolute inset-0"
+                  style={{
+                    background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.1) 100%)'
+                  }}
+                />
+
+                <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
+                  <Badge
+                    className="mb-3"
+                    style={{
+                      backgroundColor: CorporateColors.accent,
+                      color: 'white',
+                      border: 'none'
+                    }}
+                  >
+                    {currentItem.category}
+                  </Badge>
+                  <h3 className="text-3xl font-bold mb-2">
+                    {currentItem.title}
+                  </h3>
+                  <p className="text-lg opacity-90">
+                    {currentItem.description}
+                  </p>
+                </div>
+
+                <div className="absolute top-6 right-6">
                   <div
-                    className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                    style={{ background: `linear-gradient(135deg, ${C.primary}10 0%, ${C.accent}15 100%)` }}
-                  />
-                  <span className="relative z-10 text-xs font-semibold text-center leading-tight" style={{ color: C.textSecondary }}>
-                    {name}
-                  </span>
+                    className="px-4 py-2 rounded-full flex items-center gap-2"
+                    style={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                      backdropFilter: 'blur(10px)',
+                      color: 'white'
+                    }}
+                  >
+                    {currentItem.type === 'video' ? (
+                      <>
+                        <Play className="w-4 h-4" />
+                        <span className="text-sm font-medium">Video</span>
+                      </>
+                    ) : (
+                      <>
+                        <ImageIcon className="w-4 h-4" />
+                        <span className="text-sm font-medium">Foto</span>
+                      </>
+                    )}
+                  </div>
                 </div>
               </motion.div>
-            ))}
-          </motion.div>
-        </motion.div>
+            </AnimatePresence>
 
-        <motion.div className="mt-8 text-center" variants={fadeInUp}>
-          <div
-            className="inline-block px-8 py-4 rounded-2xl"
-            style={{ background: `linear-gradient(135deg, ${C.primary}08 0%, ${C.accent}08 100%)`, border: `1px solid ${C.border}` }}
-          >
-            <p className="text-sm font-medium mb-1" style={{ color: C.textSecondary }}>OTEC Certificada NCh 2728:2015</p>
-            <p
-              className="text-2xl md:text-3xl font-bold"
+            <button
+              onClick={goToPrevious}
+              className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
               style={{
-                background: `linear-gradient(135deg, ${C.primary} 0%, ${C.accent} 100%)`,
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text'
+                backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = CorporateColors.primary;
+                e.currentTarget.querySelector('svg')?.setAttribute('stroke', 'white');
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
+                e.currentTarget.querySelector('svg')?.setAttribute('stroke', CorporateColors.primary);
               }}
             >
-              Múltiples Instituciones Capacitadas
-            </p>
+              <ChevronLeft
+                className="w-6 h-6"
+                style={{ color: CorporateColors.primary }}
+              />
+            </button>
+
+            <button
+              onClick={goToNext}
+              className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
+              style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = CorporateColors.primary;
+                e.currentTarget.querySelector('svg')?.setAttribute('stroke', 'white');
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
+                e.currentTarget.querySelector('svg')?.setAttribute('stroke', CorporateColors.primary);
+              }}
+            >
+              <ChevronRight
+                className="w-6 h-6"
+                style={{ color: CorporateColors.primary }}
+              />
+            </button>
           </div>
+
+          <div className="flex justify-center gap-2 mt-6">
+            {galleryItems.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => goToSlide(index)}
+                className="transition-all duration-300 rounded-full"
+                style={{
+                  width: currentIndex === index ? '40px' : '12px',
+                  height: '12px',
+                  backgroundColor: currentIndex === index
+                    ? CorporateColors.primary
+                    : CorporateColors.border
+                }}
+              />
+            ))}
+          </div>
+
+          <div className="grid grid-cols-3 md:grid-cols-6 gap-4 mt-8">
+            {galleryItems.map((item, index) => (
+              <button
+                key={index}
+                onClick={() => goToSlide(index)}
+                className="relative rounded-lg overflow-hidden group aspect-video transition-all duration-300"
+                style={{
+                  border: currentIndex === index
+                    ? `3px solid ${CorporateColors.primary}`
+                    : '3px solid transparent'
+                }}
+              >
+                <img
+                  src={item.url}
+                  alt={item.title}
+                  className="w-full h-full object-cover transition-all duration-300 group-hover:scale-110"
+                  style={{
+                    filter: currentIndex === index ? 'grayscale(0%)' : 'grayscale(100%)'
+                  }}
+                />
+                <div
+                  className="absolute inset-0 bg-black transition-opacity duration-300"
+                  style={{
+                    opacity: currentIndex === index ? 0 : 0.4
+                  }}
+                />
+              </button>
+            ))}
+          </div>
+        </motion.div>
+
+        <motion.div className="text-center mt-8" variants={fadeInUp}>
+          <p
+            className="text-sm"
+            style={{ color: CorporateColors.textSecondary }}
+          >
+            {isAutoPlaying
+              ? 'Reproducción automática activada • Haz clic en las flechas para controlar manualmente'
+              : 'Reproducción automática pausada • Las imágenes cambian automáticamente cada 5 segundos'}
+          </p>
         </motion.div>
       </div>
     </motion.section>
   );
 }
 
-// ─── OurHistory ──────────────────────────────────────────────────────────────
-function OurHistory() {
-  const stats = [
-    { icon: Award, value: 'Ley 19.518', label: 'Franquicia Tributaria', color: C.primary },
-    { icon: Shield, value: 'NCh 2728', label: 'Certificación vigente', color: C.secondary },
-    { icon: Star, value: '95%', label: 'Satisfacción', color: C.accent },
-    { icon: TrendingUp, value: '100%', label: 'Compromiso con calidad', color: C.primary },
+// ─── InstructorsSection ───────────────────────────────────────────────────────
+function InstructorsSection() {
+  const fadeInUp = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] }
+    }
+  };
+
+  const fadeInLeft = {
+    hidden: { opacity: 0, x: -30 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] }
+    }
+  };
+
+  const fadeInRight = {
+    hidden: { opacity: 0, x: 30 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] }
+    }
+  };
+
+  const staggerChildren = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.15
+      }
+    }
+  };
+
+  const requirements = [
+    {
+      icon: GraduationCap,
+      title: 'Formación Académica Formal',
+      description: 'Título profesional acreditado, complementado con diplomados, magíster y/o doctorado según el área de especialización.',
+      color: CorporateColors.primary
+    },
+    {
+      icon: TrendingUp,
+      title: 'Especialización Técnica Actualizada',
+      description: 'Formación continua en cursos, seminarios y certificaciones que aseguran dominio técnico vigente en su disciplina.',
+      color: CorporateColors.secondary
+    },
+    {
+      icon: Users,
+      title: 'Competencias Transversales',
+      description: 'Habilidades comunicacionales, liderazgo pedagógico y capacidad de trabajo colaborativo, fundamentales para procesos formativos efectivos.',
+      color: CorporateColors.accent
+    },
+    {
+      icon: Award,
+      title: 'Experiencia Profesional Comprobable',
+      description: 'Trayectoria laboral demostrable en el área de desempeño, garantizando enfoque práctico y aplicado.',
+      color: '#4A90E2'
+    },
+    {
+      icon: BookOpen,
+      title: 'Experiencia en Relatoría',
+      description: 'Experiencia acreditable en ejecución de cursos de capacitación, con enfoque en resultados de aprendizaje y transferencia al puesto de trabajo.',
+      color: '#E63E96'
+    }
+  ];
+
+  const trustReasons = [
+    {
+      icon: Award,
+      title: 'OTEC acreditada',
+      description: 'Procesos respaldados por Sistema de Gestión de Calidad certificado NCh 2728:2015.',
+      color: CorporateColors.primary
+    },
+    {
+      icon: Star,
+      title: 'Relatores expertos',
+      description: 'Facilitadores con experiencia comprobable y enfoque práctico.',
+      color: CorporateColors.accent
+    },
+    {
+      icon: Smile,
+      title: '95% satisfacción',
+      description: 'Alta valoración de participantes en nuestras capacitaciones.',
+      color: CorporateColors.secondary
+    }
   ];
 
   return (
     <motion.section
-      className="py-20"
-      style={{ backgroundColor: C.bgLight }}
+      className="py-20 relative overflow-hidden"
+      style={{
+        backgroundColor: CorporateColors.bgLight,
+      }}
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true }}
     >
-      <div className="container mx-auto px-4 lg:px-8">
-        <div className="max-w-6xl mx-auto">
-          <motion.div className="text-center mb-12" variants={fadeInUp}>
-            <Badge className="mb-4" style={{ backgroundColor: C.primaryLight, color: C.primary }}>Sobre Nosotros</Badge>
-            <h2 className="text-3xl md:text-4xl font-bold mb-6" style={{ color: C.primary }}>Nuestra Historia</h2>
-            <p className="text-lg max-w-3xl mx-auto leading-relaxed" style={{ color: C.textSecondary }}>
-              Desde nuestros inicios, hemos trabajado con la convicción de que la capacitación
-              profesional es la clave para el crecimiento personal y empresarial. Como OTEC
-              certificada bajo la norma NCh 2728:2015 y acreditada por el SENCE, nos
-              enorgullecemos de ofrecer formación de excelencia que transforma vidas y organizaciones.
-            </p>
-          </motion.div>
+      <div className="absolute inset-0 opacity-10">
+        <div
+          className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl"
+          style={{ backgroundColor: CorporateColors.secondary }}
+        />
+        <div
+          className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full blur-3xl"
+          style={{ backgroundColor: CorporateColors.accent }}
+        />
+      </div>
 
-          <motion.div className="mb-12" variants={fadeInUp}>
-            <Card className="overflow-hidden border-2" style={{ borderColor: C.border }}>
-              <div
-                className="relative aspect-video flex items-center justify-center group cursor-pointer"
-                style={{ background: `linear-gradient(135deg, ${C.primary} 0%, ${C.secondary} 100%)` }}
+      <div className="container mx-auto px-4 lg:px-8 relative z-10">
+        <motion.div
+          className="text-center mb-16"
+          variants={fadeInUp}
+        >
+          <Badge
+            className="mb-4 text-sm px-4 py-2"
+            style={{
+              background: `linear-gradient(135deg, ${CorporateColors.primary} 0%, ${CorporateColors.accent} 100%)`,
+              color: 'white',
+              border: 'none'
+            }}
+          >
+            Excelencia Académica
+          </Badge>
+
+          <h2
+            className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6"
+            style={{ color: CorporateColors.primary }}
+          >
+            El perfil de nuestros relatores
+          </h2>
+
+          <p
+            className="text-lg md:text-xl max-w-3xl mx-auto"
+            style={{ color: CorporateColors.textSecondary }}
+          >
+            En OTEC El Poder de Crear contamos con un cuerpo académico seleccionado bajo criterios técnicos y de calidad, garantizando una experiencia formativa rigurosa y alineada con la normativa vigente.
+          </p>
+        </motion.div>
+
+        <div className="grid lg:grid-cols-2 gap-12 items-center max-w-7xl mx-auto mb-16">
+          <motion.div
+            variants={staggerChildren}
+            className="space-y-6"
+          >
+            {requirements.map((req, index) => (
+              <motion.div
+                key={index}
+                variants={fadeInLeft}
+                className="flex gap-4 group"
               >
-                <div className="absolute inset-0 opacity-10">
-                  <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '40px 40px' }} />
+                <div
+                  className="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300"
+                  style={{
+                    background: `linear-gradient(135deg, ${req.color}15 0%, ${req.color}25 100%)`,
+                  }}
+                >
+                  <req.icon
+                    className="w-6 h-6"
+                    style={{ color: req.color }}
+                  />
                 </div>
-                <motion.div className="relative z-10" whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                  <div className="w-20 h-20 rounded-full flex items-center justify-center shadow-2xl" style={{ backgroundColor: 'rgba(255,255,255,0.95)' }}>
-                    <Play className="w-10 h-10 ml-1" style={{ color: C.accent }} fill={C.accent} />
-                  </div>
-                </motion.div>
-                <div className="absolute inset-0 flex items-end p-8 bg-gradient-to-t from-black/60 to-transparent">
-                  <div className="text-white">
-                    <p className="text-2xl font-bold mb-2">Conoce nuestra historia</p>
-                    <p className="text-sm opacity-90">Video institucional • 3:45 min</p>
-                  </div>
-                </div>
-                <div className="absolute top-4 right-4">
-                  <Badge className="text-xs px-3 py-1" style={{ backgroundColor: C.accent, color: 'white' }}>Video próximamente</Badge>
-                </div>
-              </div>
-            </Card>
-          </motion.div>
 
-          <motion.div className="grid grid-cols-2 md:grid-cols-4 gap-6" variants={staggerChildren}>
-            {stats.map((stat, idx) => (
-              <motion.div key={idx} variants={fadeInUp}>
-                <motion.div whileHover={{ y: -8 }} transition={{ duration: 0.3 }}>
-                  <Card className="p-6 text-center border-2 hover:shadow-lg transition-shadow" style={{ borderColor: C.border }}>
-                    <motion.div className="mb-4" whileHover={{ rotate: 360 }} transition={{ duration: 0.6 }}>
-                      <stat.icon className="w-10 h-10 mx-auto" style={{ color: stat.color }} />
-                    </motion.div>
-                    <div className="text-3xl font-bold mb-2" style={{ color: C.primary }}>{stat.value}</div>
-                    <div className="text-sm font-medium" style={{ color: C.textSecondary }}>{stat.label}</div>
-                  </Card>
-                </motion.div>
+                <div className="flex-1">
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <h3
+                      className="text-lg font-bold"
+                      style={{ color: CorporateColors.textPrimary }}
+                    >
+                      {req.title}
+                    </h3>
+                    <CheckCircle
+                      className="w-5 h-5 flex-shrink-0 mt-0.5"
+                      style={{ color: '#10b981' }}
+                    />
+                  </div>
+                  <p
+                    className="leading-relaxed"
+                    style={{ color: CorporateColors.textSecondary }}
+                  >
+                    {req.description}
+                  </p>
+                </div>
               </motion.div>
             ))}
+
+            <motion.div
+              variants={fadeInLeft}
+              className="pt-6"
+            >
+              <div
+                className="inline-flex items-center gap-3 px-6 py-4 rounded-xl"
+                style={{
+                  background: `linear-gradient(135deg, ${CorporateColors.primary} 0%, ${CorporateColors.secondary} 100%)`,
+                  color: 'white'
+                }}
+              >
+                <Target className="w-6 h-6" />
+                <span className="font-semibold">
+                  Relatores calificados, conforme a la Norma NCh 2728:2015.
+                </span>
+              </div>
+            </motion.div>
           </motion.div>
 
-          <motion.div className="mt-12 text-center" variants={fadeInUp}>
-            <p className="text-base max-w-3xl mx-auto leading-relaxed" style={{ color: C.textSecondary }}>
-              Nuestro compromiso va más allá de la enseñanza: acompañamos a cada empresa y persona
-              en su proceso de transformación, entregando herramientas concretas, certificaciones
-              válidas y un seguimiento personalizado que garantiza resultados medibles.
-            </p>
+          <motion.div
+            variants={fadeInRight}
+            className="relative"
+          >
+            <div
+              className="relative rounded-2xl overflow-hidden shadow-2xl"
+              style={{
+                border: `4px solid ${CorporateColors.primary}20`
+              }}
+            >
+              <img
+                src="https://images.unsplash.com/photo-1758518732175-5d608ba3abdf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcm9mZXNzaW9uYWwlMjBidXNpbmVzcyUyMHRlYW0lMjBtZWV0aW5nJTIwb2ZmaWNlfGVufDF8fHx8MTc3MDgxNzQyMHww&ixlib=rb-4.1.0&q=80&w=1080"
+                alt="Equipo de Relatores Profesionales"
+                className="w-full h-auto object-cover"
+                style={{ aspectRatio: '4/3' }}
+              />
+
+              <div
+                className="absolute inset-0"
+                style={{
+                  background: 'linear-gradient(to top, rgba(93, 63, 211, 0.2) 0%, transparent 50%)'
+                }}
+              />
+            </div>
+
+            <motion.div
+              className="absolute -bottom-6 -left-6 bg-white rounded-2xl shadow-2xl p-6"
+              style={{
+                border: `2px solid ${CorporateColors.border}`,
+                maxWidth: '340px'
+              }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.4 }}
+            >
+              <div className="flex items-center gap-4 mb-3">
+                <div
+                  className="w-12 h-12 rounded-xl flex items-center justify-center"
+                  style={{
+                    background: `linear-gradient(135deg, ${CorporateColors.primary} 0%, ${CorporateColors.accent} 100%)`
+                  }}
+                >
+                  <Users className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <p
+                    className="text-xl font-bold leading-tight"
+                    style={{
+                      background: `linear-gradient(135deg, ${CorporateColors.primary} 0%, ${CorporateColors.accent} 100%)`,
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      backgroundClip: 'text'
+                    }}
+                  >
+                    Multidisciplinarios
+                  </p>
+                  <p
+                    className="text-sm font-medium"
+                    style={{ color: CorporateColors.textSecondary }}
+                  >
+                    Especialistas en Diversas Áreas
+                  </p>
+                </div>
+              </div>
+              <p
+                className="text-xs"
+                style={{ color: CorporateColors.textSecondary }}
+              >
+                Profesionales certificados en diversas áreas de especialización
+              </p>
+            </motion.div>
+
+            <div
+              className="absolute -top-4 -right-4 w-24 h-24 rounded-full opacity-20 blur-xl"
+              style={{
+                background: `linear-gradient(135deg, ${CorporateColors.primary} 0%, ${CorporateColors.accent} 100%)`
+              }}
+            />
           </motion.div>
         </div>
+
+        <motion.div
+          className="max-w-5xl mx-auto"
+          variants={fadeInUp}
+        >
+          <div className="text-center mb-10">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <div className="w-12 h-0.5" style={{ backgroundColor: CorporateColors.accent }} />
+              <Star className="w-5 h-5" style={{ color: CorporateColors.accent }} />
+              <div className="w-12 h-0.5" style={{ backgroundColor: CorporateColors.accent }} />
+            </div>
+
+            <h3
+              className="text-2xl md:text-3xl font-bold mb-3"
+              style={{ color: CorporateColors.primary }}
+            >
+              ¿Por qué confiar en nuestro equipo?
+            </h3>
+
+            <p
+              className="text-base md:text-lg"
+              style={{ color: CorporateColors.textSecondary }}
+            >
+              Respaldo, experiencia y resultados para su próxima capacitación.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {trustReasons.map((reason, index) => (
+              <motion.div
+                key={index}
+                className="p-6 rounded-2xl text-center bg-white"
+                style={{
+                  border: `1px solid ${CorporateColors.border}`,
+                  boxShadow: '0 4px 12px rgba(93, 63, 211, 0.06)'
+                }}
+                whileHover={{
+                  scale: 1.03,
+                  boxShadow: '0 8px 24px rgba(93, 63, 211, 0.12)',
+                  transition: { duration: 0.3 }
+                }}
+              >
+                <div
+                  className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center"
+                  style={{
+                    background: `${reason.color}15`
+                  }}
+                >
+                  <reason.icon className="w-8 h-8" style={{ color: reason.color }} />
+                </div>
+
+                <h4
+                  className="text-lg font-bold mb-3"
+                  style={{ color: CorporateColors.textPrimary }}
+                >
+                  {reason.title}
+                </h4>
+
+                <p
+                  className="text-sm leading-relaxed"
+                  style={{ color: CorporateColors.textSecondary }}
+                >
+                  {reason.description}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        <motion.div
+          className="text-center mt-12"
+          variants={fadeInUp}
+        >
+          <Button
+            size="lg"
+            className="text-lg px-8 py-6 font-semibold rounded-xl"
+            style={{
+              background: `linear-gradient(135deg, ${CorporateColors.primary} 0%, ${CorporateColors.accent} 100%)`,
+              color: 'white',
+              border: 'none'
+            }}
+          >
+            <UserPlus className="w-5 h-5 mr-2" />
+            Únete a Nuestro Equipo de Relatores
+          </Button>
+        </motion.div>
       </div>
     </motion.section>
   );
 }
 
-// ─── Main Page ───────────────────────────────────────────────────────────────
-export default function HomePage() {
+// ─── Main Page ────────────────────────────────────────────────────────────────
+export default function NewHomePageDynamic() {
   const router = useRouter();
+  const [activeTab, setActiveTab] = useState<
+    "empresas" | "personas"
+  >("empresas");
   const { scrollYProgress } = useScroll();
-  const scrollOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
+  const opacity = useTransform(
+    scrollYProgress,
+    [0, 0.2],
+    [1, 0],
+  );
 
-  const navigate = (page: string) => {
-    const routes: Record<string, string> = {
-      home: '/',
-      nosotros: '/nosotros',
-      empresas: '/empresas',
-      ate: '/sence',
-      'educacion-continua': '/educacion-continua',
-      cursos: '/cursos',
-      eventos: '/eventos',
-      contacto: '/contacto',
-      checkout: '/checkout',
-    };
-    router.push(routes[page] ?? `/${page}`);
+  const onNavigate = (page: string) => router.push('/' + page);
+
+  const fadeInUp = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: "easeOut" },
+    },
+  };
+
+  const staggerChildren = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: C.bgLight }}>
-
-      {/* ── HERO ── */}
+    <div
+      className="min-h-screen"
+      style={{
+        background: CorporateColors.bgGradient,
+      }}
+    >
+      {/* HERO SECTION - ESTILO DINÁMICO */}
       <motion.section
-        className="relative overflow-hidden"
-        style={{ backgroundColor: C.primary }}
-        initial="hidden"
-        animate="visible"
+        className="relative pt-32 pb-24 overflow-hidden"
+        style={{
+          backgroundColor: CorporateColors.primary,
+        }}
       >
-        <div className="absolute inset-0 opacity-10 pointer-events-none">
-          <motion.div
-            className="absolute top-20 right-20 w-96 h-96 rounded-full blur-3xl"
-            style={{ backgroundColor: C.accent }}
-            animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
-            transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
-          />
-          <motion.div
-            className="absolute bottom-20 left-20 w-96 h-96 rounded-full blur-3xl"
-            style={{ backgroundColor: C.secondary }}
-            animate={{ scale: [1.2, 1, 1.2], opacity: [0.2, 0.4, 0.2] }}
-            transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
-          />
+        {/* Partículas flotantes de fondo */}
+        <div className="absolute inset-0 overflow-hidden opacity-30">
+          {[...Array(30)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute rounded-full"
+              style={{
+                width: Math.random() * 6 + 2 + "px",
+                height: Math.random() * 6 + 2 + "px",
+                backgroundColor:
+                  i % 3 === 0
+                    ? CorporateColors.accent
+                    : i % 3 === 1
+                      ? CorporateColors.secondary
+                      : CorporateColors.primary,
+                left: Math.random() * 100 + "%",
+                top: Math.random() * 100 + "%",
+                opacity: 0.2,
+              }}
+              animate={{
+                y: [0, Math.random() * -100 - 50],
+                opacity: [0, 0.3, 0],
+              }}
+              transition={{
+                duration: Math.random() * 3 + 2,
+                repeat: Infinity,
+                delay: Math.random() * 2,
+              }}
+            />
+          ))}
         </div>
 
-        <div className="container mx-auto px-4 lg:px-8 py-24 lg:py-40 relative z-10">
+        <div className="container mx-auto px-4 lg:px-8 relative z-10">
           <div className="max-w-6xl mx-auto">
-            <motion.div className="text-center mb-16" variants={fadeInUp}>
-
-              <motion.div
-                initial={{ scale: 0, rotate: -180 }}
-                animate={{ scale: 1, rotate: 0 }}
-                transition={{ duration: 0.6, ease: 'easeOut', delay: 0.2 }}
-              >
-                <Badge
-                  variant="outline"
-                  className="mb-8 text-sm px-5 py-2.5 border-2 inline-flex items-center gap-2"
-                  style={{ borderColor: C.accent, color: 'white', backgroundColor: 'rgba(243,108,33,0.15)' }}
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              {/* Contenido Principal */}
+              <div>
+                {/* Badge OTEC con glassmorphism */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5 }}
+                  className="inline-block mb-8"
                 >
-                  <Shield className="w-4 h-4" />
-                  OTEC Certificada NCh 2728:2015 • Acreditada por SENCE
-                </Badge>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 40 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.3 }}
-              >
-                <h1
-                  className="text-5xl md:text-6xl lg:text-8xl font-bold mb-6 text-white leading-tight"
-                  style={{ letterSpacing: '-0.02em' }}
-                >
-                  EL PODER DE{' '}
-                  <motion.span
-                    className="inline-block"
-                    style={{ color: C.accent }}
-                    animate={{
-                      textShadow: [
-                        '0 0 20px rgba(243,108,33,0)',
-                        '0 0 20px rgba(243,108,33,0.3)',
-                        '0 0 20px rgba(243,108,33,0)',
-                      ],
+                  <div
+                    className="px-6 py-3 rounded-full flex items-center gap-3"
+                    style={{
+                      backgroundColor: CorporateColors.accent,
+                      border: "none",
                     }}
-                    transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
                   >
-                    CREAR
-                  </motion.span>
-                </h1>
-              </motion.div>
+                    <Shield className="w-5 h-5 text-white" />
+                    <span className="text-white font-semibold text-sm">
+                      OTEC Acreditada por SENCE
+                    </span>
+                  </div>
+                </motion.div>
 
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.5 }}
-              >
-                <p
-                  className="text-3xl md:text-4xl lg:text-5xl font-bold mb-10 text-white/95"
-                  style={{ fontStyle: 'italic', letterSpacing: '0.01em', lineHeight: '1.3' }}
+                {/* Título Principal */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2, duration: 0.6 }}
                 >
-                  Aprendes hoy,{' '}
-                  <span style={{ color: C.accent }}>lideras mañana</span>
-                </p>
-              </motion.div>
+                  <h1
+                    className="text-5xl md:text-6xl lg:text-7xl font-bold mb-4 leading-tight"
+                    style={{ color: "white" }}
+                  >
+                    El Poder de
+                    <br />
+                    <span
+                      className="relative inline-block"
+                      style={{ color: CorporateColors.accent }}
+                    >
+                      Crear
+                      <motion.div
+                        className="absolute bottom-2 left-0 right-0 h-2"
+                        style={{
+                          backgroundColor: "white",
+                          opacity: 0.3,
+                        }}
+                        initial={{ width: 0 }}
+                        animate={{ width: "100%" }}
+                        transition={{
+                          delay: 0.8,
+                          duration: 0.8,
+                        }}
+                      />
+                    </span>
+                  </h1>
+                </motion.div>
 
+                {/* Slogan */}
+                <motion.p
+                  className="text-2xl mb-8 italic"
+                  style={{ color: "rgba(255, 255, 255, 0.9)" }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.4, duration: 0.6 }}
+                >
+                  Aprendes hoy, lideras mañana
+                </motion.p>
+
+                {/* Descripción */}
+                <motion.p
+                  className="text-lg mb-10 max-w-xl"
+                  style={{ color: "rgba(255, 255, 255, 0.85)" }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.5, duration: 0.6 }}
+                >
+                  Somos un Organismo Técnico de Capacitación
+                  (OTEC) certificado bajo la Norma Chilena NCh
+                  2728:2015, especializado en el desarrollo de
+                  competencias laborales para empresas y
+                  personas, mediante programas de capacitación
+                  alineados a la normativa vigente y a las
+                  necesidades reales del entorno laboral.
+                </motion.p>
+
+                {/* CTA Buttons */}
+                <motion.div
+                  className="flex flex-col sm:flex-row gap-4"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.6, duration: 0.6 }}
+                >
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Button
+                      size="lg"
+                      className="text-lg px-8 py-6 font-semibold"
+                      style={{
+                        backgroundColor: CorporateColors.accent,
+                        color: "white",
+                      }}
+                      onClick={() => router.push('/empresas')}
+                    >
+                      Soluciones para Empresas
+                      <ArrowRight className="ml-2 w-5 h-5" />
+                    </Button>
+                  </motion.div>
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="text-lg px-8 py-6 font-semibold"
+                      style={{
+                        borderColor: "white",
+                        color: "white",
+                        borderWidth: "2px",
+                        backgroundColor: "transparent",
+                      }}
+                      onClick={() =>
+                        router.push('/educacion-continua')
+                      }
+                    >
+                      Cursos Individuales
+                      <ArrowRight className="ml-2 w-5 h-5" />
+                    </Button>
+                  </motion.div>
+                </motion.div>
+              </div>
+
+              {/* Cards Flotantes con Info */}
+              <div
+                className="relative hidden lg:block"
+                style={{
+                  height: "500px",
+                  width: "100%",
+                  maxWidth: "700px",
+                  margin: "0 auto",
+                }}
+              >
+                {/* Card Logo OTEC - Lado Izquierdo */}
+                <motion.div
+                  className="absolute p-6 rounded-2xl shadow-2xl"
+                  style={{
+                    backgroundColor: "white",
+                    border: `2px solid ${CorporateColors.borderLight}`,
+                    width: "280px",
+                    height: "280px",
+                    top: "50%",
+                    left: "0",
+                    transform: "translateY(-50%)",
+                    zIndex: 10,
+                  }}
+                  animate={{
+                    y: [0, -10, 0],
+                  }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                >
+                  <div className="w-full h-full flex items-center justify-center">
+                    <img
+                      src="/logo-otec.png"
+                      alt="El Poder de Crear - OTEC"
+                      className="w-full h-full"
+                      style={{
+                        objectFit: "contain",
+                        maxWidth: "100%",
+                        maxHeight: "100%",
+                      }}
+                    />
+                  </div>
+                </motion.div>
+
+                {/* Card 1: Superior Derecha */}
+                <motion.div
+                  className="absolute p-4 rounded-2xl shadow-xl"
+                  style={{
+                    background: "rgba(255, 107, 53, 0.15)",
+                    backdropFilter: "blur(10px)",
+                    border: "1px solid rgba(255, 107, 53, 0.3)",
+                    width: "200px",
+                    top: "20px",
+                    right: "0",
+                    zIndex: 5,
+                  }}
+                  animate={{
+                    y: [0, -12, 0],
+                  }}
+                  transition={{
+                    duration: 3.5,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: 0.5,
+                  }}
+                >
+                  <div
+                    className="w-12 h-12 rounded-xl flex items-center justify-center mb-3 mx-auto"
+                    style={{
+                      backgroundColor:
+                        "rgba(255, 107, 53, 0.3)",
+                    }}
+                  >
+                    <Star
+                      className="w-6 h-6"
+                      style={{ color: "#FF6B35" }}
+                    />
+                  </div>
+                  <div className="text-2xl font-bold text-white text-center mb-1">
+                    95%
+                  </div>
+                  <div className="text-xs text-white/80 text-center leading-tight mb-2">
+                    Satisfacción
+                  </div>
+                  <div className="text-xs text-white/70 text-center leading-tight font-medium">
+                    Relatores especializados: Experiencia
+                    comprobable
+                  </div>
+                </motion.div>
+
+                {/* Card 2: Centro Derecha */}
+                <motion.div
+                  className="absolute p-4 rounded-2xl shadow-xl"
+                  style={{
+                    background: "rgba(0, 217, 255, 0.15)",
+                    backdropFilter: "blur(10px)",
+                    border: "1px solid rgba(0, 217, 255, 0.3)",
+                    width: "190px",
+                    top: "50%",
+                    right: "40px",
+                    transform: "translateY(-50%)",
+                    zIndex: 5,
+                  }}
+                  animate={{
+                    x: [0, 10, 0],
+                  }}
+                  transition={{
+                    duration: 3.8,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: 1,
+                  }}
+                >
+                  <div
+                    className="w-12 h-12 rounded-xl flex items-center justify-center mb-3 mx-auto"
+                    style={{
+                      backgroundColor: "rgba(0, 217, 255, 0.3)",
+                    }}
+                  >
+                    <Target
+                      className="w-6 h-6"
+                      style={{ color: "#00D9FF" }}
+                    />
+                  </div>
+                  <div className="text-lg font-bold text-white text-center mb-1 leading-tight">
+                    Metodologías aplicadas
+                  </div>
+                  <div className="text-xs text-white/80 text-center leading-tight">
+                    Enfoque práctico
+                  </div>
+                </motion.div>
+
+                {/* Card 3: Inferior Derecha */}
+                <motion.div
+                  className="absolute p-4 rounded-2xl shadow-xl"
+                  style={{
+                    background: "rgba(230, 62, 150, 0.15)",
+                    backdropFilter: "blur(10px)",
+                    border: "1px solid rgba(230, 62, 150, 0.3)",
+                    width: "210px",
+                    bottom: "20px",
+                    right: "0",
+                    zIndex: 5,
+                  }}
+                  animate={{
+                    x: [0, -10, 0],
+                  }}
+                  transition={{
+                    duration: 3.3,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: 1.5,
+                  }}
+                >
+                  <div
+                    className="w-12 h-12 rounded-xl flex items-center justify-center mb-3 mx-auto"
+                    style={{
+                      backgroundColor:
+                        "rgba(230, 62, 150, 0.3)",
+                    }}
+                  >
+                    <Building2
+                      className="w-6 h-6"
+                      style={{ color: "#E63E96" }}
+                    />
+                  </div>
+                  <div className="text-lg font-bold text-white text-center mb-1 leading-tight">
+                    Experiencia multisectorial
+                  </div>
+                  <div className="text-xs text-white/80 text-center leading-tight">
+                    Público y privado
+                  </div>
+                </motion.div>
+
+                {/* Card 4: Superior Centro-Derecha */}
+                <motion.div
+                  className="absolute p-4 rounded-2xl shadow-xl"
+                  style={{
+                    background: "rgba(107, 92, 231, 0.15)",
+                    backdropFilter: "blur(10px)",
+                    border: "1px solid rgba(107, 92, 231, 0.3)",
+                    width: "190px",
+                    top: "60px",
+                    left: "320px",
+                    zIndex: 5,
+                  }}
+                  animate={{
+                    y: [0, 10, 0],
+                  }}
+                  transition={{
+                    duration: 3.6,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: 0.8,
+                  }}
+                >
+                  <div
+                    className="w-12 h-12 rounded-xl flex items-center justify-center mb-3 mx-auto"
+                    style={{
+                      backgroundColor:
+                        "rgba(107, 92, 231, 0.3)",
+                    }}
+                  >
+                    <Users
+                      className="w-6 h-6"
+                      style={{ color: "#6B5CE7" }}
+                    />
+                  </div>
+                  <div className="text-xl font-bold text-white text-center mb-1">
+                    Soporte Continuo
+                  </div>
+                  <div className="text-xs text-white/80 text-center leading-tight">
+                    Acompañamiento permanente
+                  </div>
+                </motion.div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </motion.section>
+
+      {/* SECCIÓN: GALERÍA - Cursos que Hemos Impartido */}
+      <GalleryCarousel />
+
+      {/* SECCIÓN: ¿QUÉ OFRECEMOS? - Con tabs dinámicos */}
+      <motion.section
+        className="py-20"
+        style={{ backgroundColor: CorporateColors.bgLight }}
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+      >
+        <div className="container mx-auto px-4 lg:px-8">
+          <div className="text-center mb-16">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <Badge
+                className="mb-4"
+                style={{
+                  backgroundColor: CorporateColors.primary,
+                  color: "white",
+                  fontSize: "0.875rem",
+                  padding: "0.5rem 1.5rem",
+                }}
+              >
+                Nuestras Soluciones
+              </Badge>
+              <h2
+                className="text-4xl md:text-5xl font-bold mb-4"
+                style={{ color: CorporateColors.textPrimary }}
+              >
+                Capacitación Diseñada para{" "}
+                <span
+                  style={{ color: CorporateColors.primary }}
+                >
+                  Tu Éxito
+                </span>
+              </h2>
+              <p
+                className="text-xl max-w-3xl mx-auto"
+                style={{ color: CorporateColors.textSecondary }}
+              >
+                Programas flexibles que se adaptan a tus
+                necesidades
+              </p>
+            </motion.div>
+          </div>
+
+          <Tabs
+            value={activeTab}
+            onValueChange={(val) =>
+              setActiveTab(val as "empresas" | "personas")
+            }
+            className="max-w-6xl mx-auto"
+          >
+            <div className="flex justify-center mb-12">
+              <TabsList
+                className="p-2 rounded-2xl"
+                style={{
+                  backgroundColor: "rgba(255, 255, 255, 0.9)",
+                  border: `2px solid ${CorporateColors.border}`,
+                }}
+              >
+                <TabsTrigger
+                  value="empresas"
+                  className="px-8 py-3 rounded-xl font-semibold transition-all"
+                  style={{
+                    backgroundColor:
+                      activeTab === "empresas"
+                        ? CorporateColors.primary
+                        : "rgba(93, 63, 211, 0)",
+                    color:
+                      activeTab === "empresas"
+                        ? "white"
+                        : CorporateColors.textSecondary,
+                  }}
+                >
+                  <Building2 className="w-5 h-5 mr-2" />
+                  Para Empresas
+                </TabsTrigger>
+                <TabsTrigger
+                  value="personas"
+                  className="px-8 py-3 rounded-xl font-semibold transition-all"
+                  style={{
+                    backgroundColor:
+                      activeTab === "personas"
+                        ? CorporateColors.primary
+                        : "rgba(93, 63, 211, 0)",
+                    color:
+                      activeTab === "personas"
+                        ? "white"
+                        : CorporateColors.textSecondary,
+                  }}
+                >
+                  <Users className="w-5 h-5 mr-2" />
+                  Educación Continua
+                </TabsTrigger>
+              </TabsList>
+            </div>
+
+            <TabsContent value="empresas">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.7 }}
+                transition={{ duration: 0.5 }}
               >
-                <p className="text-xl md:text-2xl text-white/90 mb-16 max-w-4xl mx-auto leading-relaxed">
-                  Capacitación profesional para empresas y organizaciones,{' '}
-                  <strong>con enfoque en calidad, pertinencia y desarrollo de competencias.</strong>
-                </p>
-              </motion.div>
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {[
+                    {
+                      icon: Target,
+                      title: "Diagnóstico y Planificación",
+                      description:
+                        "Analizamos las necesidades de tu equipo y diseñamos un plan de capacitación a medida.",
+                      color: CorporateColors.purple,
+                      bgColor: "rgba(155, 109, 255, 0.1)",
+                    },
+                    {
+                      icon: GraduationCap,
+                      title: "Ejecución de Programas",
+                      description:
+                        "Implementamos cursos con relatores expertos en modalidad presencial, online o blended.",
+                      color: CorporateColors.accent,
+                      bgColor: "rgba(255, 140, 66, 0.1)",
+                    },
+                    {
+                      icon: Shield,
+                      title: "Acompañamiento en procesos SENCE",
+                      description:
+                        "Orientamos y acompañamos a empresas y personas en los requisitos y etapas del proceso SENCE, conforme a la normativa vigente.",
+                      color: CorporateColors.blue,
+                      bgColor: "rgba(74, 144, 226, 0.1)",
+                    },
+                    {
+                      icon: TrendingUp,
+                      title: "Medición de Resultados",
+                      description:
+                        "Evaluamos el impacto de la capacitación con indicadores claros y reportes detallados.",
+                      color: CorporateColors.pink,
+                      bgColor: "rgba(230, 62, 150, 0.1)",
+                    },
+                    {
+                      icon: Users,
+                      title: "Acompañamiento Continuo",
+                      description:
+                        "Equipo dedicado disponible para resolver dudas y apoyar en todo momento.",
+                      color: CorporateColors.purple,
+                      bgColor: "rgba(155, 109, 255, 0.1)",
+                    },
+                    {
+                      icon: CheckCircle,
+                      title: "Certificación Oficial",
+                      description:
+                        "Entrega de certificados con validez nacional avalados por SENCE.",
+                      color: CorporateColors.accent,
+                      bgColor: "rgba(255, 140, 66, 0.1)",
+                    },
+                  ].map((item, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: index * 0.1 }}
+                      whileHover={{ scale: 1.05, y: -5 }}
+                    >
+                      <Card
+                        className="p-6 h-full hover:shadow-xl transition-all"
+                        style={{
+                          backgroundColor: "white",
+                          border: `2px solid ${item.bgColor}`,
+                        }}
+                      >
+                        <div
+                          className="w-14 h-14 rounded-xl flex items-center justify-center mb-4"
+                          style={{
+                            backgroundColor: item.bgColor,
+                          }}
+                        >
+                          <item.icon
+                            className="w-7 h-7"
+                            style={{ color: item.color }}
+                          />
+                        </div>
+                        <h3
+                          className="text-xl font-semibold mb-3"
+                          style={{
+                            color: CorporateColors.textPrimary,
+                          }}
+                        >
+                          {item.title}
+                        </h3>
+                        <p
+                          style={{
+                            color:
+                              CorporateColors.textSecondary,
+                          }}
+                        >
+                          {item.description}
+                        </p>
+                      </Card>
+                    </motion.div>
+                  ))}
+                </div>
 
+                <motion.div
+                  className="text-center mt-12"
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                >
+                  <Button
+                    size="lg"
+                    className="text-lg px-8 py-6 font-semibold"
+                    style={{
+                      backgroundColor: CorporateColors.primary,
+                      color: "white",
+                    }}
+                    onClick={() => router.push('/empresas')}
+                  >
+                    Ver Más Sobre Soluciones Empresariales
+                    <ArrowRight className="ml-2 w-5 h-5" />
+                  </Button>
+                </motion.div>
+              </motion.div>
+            </TabsContent>
+
+            <TabsContent value="personas">
               <motion.div
-                className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 mb-16 max-w-4xl mx-auto"
-                initial="hidden"
-                animate="visible"
-                variants={staggerChildren}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
               >
-                {[
-                  { value: 'Ley 19.518', label: 'Franquicia Tributaria', icon: Award },
-                  { value: '95%', label: 'Satisfacción', icon: Star },
-                  { value: '100%', label: 'Compromiso con calidad', icon: Shield },
-                  { value: '24/7', label: 'Soporte continuo', icon: Users },
-                ].map((stat, index) => (
-                  <motion.div key={index} variants={fadeInUp} className="text-center">
-                    <stat.icon className="w-8 h-8 mx-auto mb-3" style={{ color: C.accent }} />
-                    <div className="text-3xl md:text-4xl font-bold text-white mb-1">{stat.value}</div>
-                    <div className="text-sm text-white/70">{stat.label}</div>
-                  </motion.div>
-                ))}
-              </motion.div>
-            </motion.div>
-
-            {/* Dual CTA cards */}
-            <motion.div
-              className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto"
-              variants={staggerChildren}
-              initial="hidden"
-              animate="visible"
-            >
-              <motion.div variants={fadeInUp}>
-                <motion.div whileHover="hover" initial="rest" variants={scaleOnHover}>
+                <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
                   <Card
-                    className="p-8 cursor-pointer group relative overflow-hidden border-2 h-full"
-                    style={{ backgroundColor: 'white', borderColor: C.primary }}
-                    onClick={() => navigate('empresas')}
+                    className="p-8 hover:shadow-xl transition-all"
+                    style={{
+                      backgroundColor: "white",
+                      border: `2px solid rgba(155, 109, 255, 0.2)`,
+                    }}
                   >
-                    <motion.div
-                      className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-300"
-                      style={{ background: `linear-gradient(135deg, ${C.primary}, ${C.accent})` }}
-                    />
-                    <div className="relative z-10">
-                      <Building2 className="w-12 h-12 mb-4" style={{ color: C.primary }} />
-                      <h3 className="text-2xl font-bold mb-3" style={{ color: C.primary }}>Para Empresas</h3>
-                      <p className="text-base mb-6" style={{ color: C.textSecondary }}>
-                        Capacitación corporativa, diagnóstico, propuestas a medida
-                        y gestión completa con respaldo SENCE
-                      </p>
-                      <ul className="space-y-3 mb-6">
-                        {['Programas personalizados', 'Financiamiento SENCE', 'Reportería y certificación', 'Acompañamiento especializado'].map((item, idx) => (
-                          <li key={idx} className="flex items-center gap-2">
-                            <CheckCircle className="w-5 h-5 flex-shrink-0" style={{ color: C.accent }} />
-                            <span className="text-sm" style={{ color: C.textPrimary }}>{item}</span>
-                          </li>
-                        ))}
-                      </ul>
-                      <Button className="w-full" style={{ backgroundColor: C.primary, color: 'white' }}>
-                        Cotizar Capacitación
-                        <motion.span
-                          className="inline-block ml-2"
-                          animate={{ x: [0, 5, 0] }}
-                          transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
-                        >
-                          <ArrowRight className="w-4 h-4" />
-                        </motion.span>
-                      </Button>
+                    <div
+                      className="w-16 h-16 rounded-xl flex items-center justify-center mb-6"
+                      style={{
+                        backgroundColor:
+                          "rgba(155, 109, 255, 0.1)",
+                      }}
+                    >
+                      <BookOpen
+                        className="w-8 h-8"
+                        style={{
+                          color: CorporateColors.purple,
+                        }}
+                      />
                     </div>
+                    <h3
+                      className="text-2xl font-semibold mb-4"
+                      style={{
+                        color: CorporateColors.textPrimary,
+                      }}
+                    >
+                      Cursos Abiertos
+                    </h3>
+                    <p
+                      className="mb-6"
+                      style={{
+                        color: CorporateColors.textSecondary,
+                      }}
+                    >
+                      Programas diseñados para profesionales que
+                      buscan actualizar sus competencias y
+                      destacar en el mercado laboral.
+                    </p>
+                    <ul className="space-y-3 mb-6">
+                      {[
+                        "Inscripción flexible",
+                        "Horarios adaptables",
+                        "Certificación oficial",
+                        "Metodología práctica",
+                        "Acceso a plataforma 24/7",
+                      ].map((item, i) => (
+                        <li
+                          key={i}
+                          className="flex items-center gap-3"
+                        >
+                          <CheckCircle
+                            className="w-5 h-5"
+                            style={{
+                              color: CorporateColors.purple,
+                            }}
+                          />
+                          <span
+                            style={{
+                              color:
+                                CorporateColors.textSecondary,
+                            }}
+                          >
+                            {item}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                    <Button
+                      className="w-full"
+                      size="lg"
+                      style={{
+                        backgroundColor: CorporateColors.purple,
+                        color: "white",
+                      }}
+                      onClick={() =>
+                        router.push('/educacion-continua')
+                      }
+                    >
+                      Explorar Cursos Abiertos
+                      <ArrowRight className="ml-2 w-5 h-5" />
+                    </Button>
                   </Card>
-                </motion.div>
-              </motion.div>
 
-              <motion.div variants={fadeInUp}>
-                <motion.div whileHover="hover" initial="rest" variants={scaleOnHover}>
                   <Card
-                    className="p-8 cursor-pointer group relative overflow-hidden border-2 h-full"
-                    style={{ backgroundColor: 'white', borderColor: C.accent }}
-                    onClick={() => navigate('educacion-continua')}
+                    className="p-8 hover:shadow-xl transition-all"
+                    style={{
+                      backgroundColor: "white",
+                      border: `2px solid rgba(230, 62, 150, 0.2)`,
+                    }}
                   >
-                    <motion.div
-                      className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-300"
-                      style={{ background: `linear-gradient(135deg, ${C.accent}, ${C.secondary})` }}
-                    />
-                    <div className="relative z-10">
-                      <GraduationCap className="w-12 h-12 mb-4" style={{ color: C.accent }} />
-                      <h3 className="text-2xl font-bold mb-3" style={{ color: C.accent }}>Educación Continua</h3>
-                      <p className="text-base mb-6" style={{ color: C.textSecondary }}>
-                        Cursos individuales para tu crecimiento profesional,
-                        con certificación válida y acceso a plataforma
-                      </p>
-                      <ul className="space-y-3 mb-6">
-                        {['Inscripción individual', 'Certificación oficial', 'Horarios flexibles', 'Plataforma 24/7'].map((item, idx) => (
-                          <li key={idx} className="flex items-center gap-2">
-                            <CheckCircle className="w-5 h-5 flex-shrink-0" style={{ color: C.primary }} />
-                            <span className="text-sm" style={{ color: C.textPrimary }}>{item}</span>
-                          </li>
-                        ))}
-                      </ul>
-                      <Button className="w-full" style={{ backgroundColor: C.accent, color: 'white' }}>
-                        Ver Cursos
-                        <motion.span
-                          className="inline-block ml-2"
-                          animate={{ x: [0, 5, 0] }}
-                          transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
-                        >
-                          <ArrowRight className="w-4 h-4" />
-                        </motion.span>
-                      </Button>
+                    <div
+                      className="w-16 h-16 rounded-xl flex items-center justify-center mb-6"
+                      style={{
+                        backgroundColor:
+                          "rgba(230, 62, 150, 0.1)",
+                      }}
+                    >
+                      <Zap
+                        className="w-8 h-8"
+                        style={{ color: CorporateColors.pink }}
+                      />
                     </div>
+                    <h3
+                      className="text-2xl font-semibold mb-4"
+                      style={{
+                        color: CorporateColors.textPrimary,
+                      }}
+                    >
+                      Demo Gratis
+                    </h3>
+                    <p
+                      className="mb-6"
+                      style={{
+                        color: CorporateColors.textSecondary,
+                      }}
+                    >
+                      Prueba nuestro Campus Virtual sin costo y
+                      descubre la experiencia de aprendizaje que
+                      ofrecemos.
+                    </p>
+                    <ul className="space-y-3 mb-6">
+                      {[
+                        "Acceso inmediato",
+                        "Contenido de muestra",
+                        "Sin compromiso",
+                        "Soporte en línea",
+                        "Certificado de prueba",
+                      ].map((item, i) => (
+                        <li
+                          key={i}
+                          className="flex items-center gap-3"
+                        >
+                          <CheckCircle
+                            className="w-5 h-5"
+                            style={{
+                              color: CorporateColors.pink,
+                            }}
+                          />
+                          <span
+                            style={{
+                              color:
+                                CorporateColors.textSecondary,
+                            }}
+                          >
+                            {item}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                    <Button
+                      className="w-full"
+                      size="lg"
+                      variant="outline"
+                      style={{
+                        borderColor: CorporateColors.pink,
+                        color: CorporateColors.pink,
+                        borderWidth: "2px",
+                      }}
+                      onClick={() =>
+                        router.push('/educacion-continua')
+                      }
+                    >
+                      Solicitar Demo Gratis
+                      <ArrowRight className="ml-2 w-5 h-5" />
+                    </Button>
                   </Card>
-                </motion.div>
+                </div>
               </motion.div>
-            </motion.div>
-          </div>
+            </TabsContent>
+          </Tabs>
         </div>
-
-        <motion.div
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-          style={{ opacity: scrollOpacity }}
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        >
-          <div className="w-6 h-10 border-2 border-white/50 rounded-full flex justify-center pt-2">
-            <div className="w-1 h-3 bg-white/50 rounded-full" />
-          </div>
-        </motion.div>
       </motion.section>
 
-      {/* ── CLIENTES ── */}
-      <TrustedCompanies />
+      {/* INSTITUCIONES QUE HAN CONFIADO EN NOSOTROS */}
+      <section className="py-16 overflow-hidden" style={{ backgroundColor: 'white', borderTop: '1px solid #E5E7EB', borderBottom: '1px solid #E5E7EB' }}>
+        <div className="container mx-auto px-4 lg:px-8">
+          <div className="text-center mb-10">
+            <span className="inline-block px-4 py-1.5 rounded-full text-sm font-semibold mb-3" style={{ backgroundColor: CorporateColors.primaryLight, color: CorporateColors.primary }}>Instituciones que confían en nosotros</span>
+            <h2 className="text-2xl font-bold" style={{ color: CorporateColors.textPrimary }}>Presencia en todo Chile</h2>
+          </div>
+          <div className="flex flex-wrap justify-center gap-4">
+            {['Min. Bienes Nacionales','Min. Agricultura','Min. Transportes','Senado de Chile','DGAC Chile','SERNAMEG','M. Santa Bárbara','M. Navidad','Dipreca','Aduanas','FFAA','SEREMI','Punta Arenas','Programa Familias'].map((name) => (
+              <div key={name} className="px-5 py-3 rounded-xl text-sm font-medium border" style={{ backgroundColor: CorporateColors.bgLight, color: CorporateColors.textSecondary, borderColor: CorporateColors.border }}>{name}</div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-      {/* ── PROVEEDORES DEL ESTADO ── */}
+      {/* SOMOS PROVEEDORES DEL ESTADO */}
       <motion.section
         className="py-16 border-y"
-        style={{ backgroundColor: C.primaryLight, borderColor: C.border }}
+        style={{
+          backgroundColor: CorporateColors.primaryLight,
+          borderColor: CorporateColors.border
+        }}
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
@@ -513,196 +1628,51 @@ export default function HomePage() {
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
             >
-              <Badge className="mb-4" style={{ backgroundColor: C.primary, color: 'white', fontSize: '0.875rem', padding: '0.5rem 1.5rem' }}>
+              <Badge
+                className="mb-4"
+                style={{
+                  backgroundColor: CorporateColors.primary,
+                  color: 'white',
+                  fontSize: '0.875rem',
+                  padding: '0.5rem 1.5rem'
+                }}
+              >
                 <Shield className="w-4 h-4 mr-2 inline-block" />
                 Proveedor Oficial
               </Badge>
-              <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: C.textPrimary }}>
+              <h2
+                className="text-3xl md:text-4xl font-bold mb-4"
+                style={{ color: CorporateColors.textPrimary }}
+              >
                 Somos Proveedores del Estado
               </h2>
-              <p className="text-lg md:text-xl mb-6" style={{ color: C.textSecondary }}>
-                Organismo Técnico de Capacitación certificado y acreditado para brindar servicios
-                de formación a instituciones públicas y organismos estatales en Chile.
+              <p
+                className="text-lg md:text-xl mb-6"
+                style={{ color: CorporateColors.textSecondary }}
+              >
+                Organismo Técnico de Capacitación certificado y acreditado para brindar servicios de formación a instituciones públicas y organismos estatales en Chile.
               </p>
               <div className="flex flex-wrap justify-center gap-6 mt-8">
-                {['Certificación NCh 2728:2015', 'Acreditación SENCE', 'Experiencia en sector público'].map((text) => (
-                  <div key={text} className="flex items-center gap-2">
-                    <CheckCircle className="w-5 h-5" style={{ color: C.accent }} />
-                    <span style={{ color: C.textSecondary }}>{text}</span>
-                  </div>
-                ))}
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-5 h-5" style={{ color: CorporateColors.accent }} />
+                  <span style={{ color: CorporateColors.textSecondary }}>Certificación NCh 2728:2015</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-5 h-5" style={{ color: CorporateColors.accent }} />
+                  <span style={{ color: CorporateColors.textSecondary }}>Acreditación SENCE</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-5 h-5" style={{ color: CorporateColors.accent }} />
+                  <span style={{ color: CorporateColors.textSecondary }}>Experiencia en sector público</span>
+                </div>
               </div>
             </motion.div>
           </div>
         </div>
       </motion.section>
 
-      {/* ── NUESTRA HISTORIA ── */}
-      <OurHistory />
-
-      {/* ── SOLUCIONES CON TABS ── */}
-      <motion.section
-        className="py-20"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-      >
-        <div className="container mx-auto px-4 lg:px-8">
-          <motion.div
-            className="text-center mb-12"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <Badge className="mb-4" style={{ backgroundColor: C.primaryLight, color: C.primary }}>
-              Nuestras Soluciones
-            </Badge>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: C.primary }}>
-              Capacitación para cada necesidad
-            </h2>
-            <p className="text-lg max-w-2xl mx-auto" style={{ color: C.textSecondary }}>
-              Elige el camino que mejor se adapte a tus objetivos de formación
-            </p>
-          </motion.div>
-
-          <Tabs defaultValue="empresas" className="max-w-6xl mx-auto">
-            <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-12">
-              <TabsTrigger value="empresas" className="text-base">
-                <Building2 className="w-4 h-4 mr-2" />
-                Empresas
-              </TabsTrigger>
-              <TabsTrigger value="personas" className="text-base">
-                <GraduationCap className="w-4 h-4 mr-2" />
-                Personas
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="empresas">
-              <motion.div className="grid md:grid-cols-3 gap-6" variants={staggerChildren} initial="hidden" animate="visible">
-                {[
-                  { icon: Target, title: 'Diagnóstico', description: 'Evaluamos las necesidades de capacitación de tu equipo', color: C.primary },
-                  { icon: BookOpen, title: 'Propuesta a Medida', description: 'Diseñamos programas personalizados para tus objetivos', color: C.secondary },
-                  { icon: TrendingUp, title: 'Ejecución y Reportes', description: 'Gestión completa con seguimiento y certificación', color: C.accent },
-                ].map((item, idx) => (
-                  <motion.div key={idx} variants={fadeInUp}>
-                    <motion.div whileHover={{ y: -8 }} transition={{ duration: 0.3 }}>
-                      <Card className="p-6 h-full border-2 hover:shadow-lg transition-shadow">
-                        <motion.div className="mb-4" whileHover={{ scale: 1.1, rotate: 5 }}>
-                          <item.icon className="w-12 h-12" style={{ color: item.color }} />
-                        </motion.div>
-                        <h3 className="text-xl font-bold mb-3" style={{ color: C.textPrimary }}>{item.title}</h3>
-                        <p style={{ color: C.textSecondary }}>{item.description}</p>
-                      </Card>
-                    </motion.div>
-                  </motion.div>
-                ))}
-              </motion.div>
-            </TabsContent>
-
-            <TabsContent value="personas">
-              <motion.div className="grid md:grid-cols-3 gap-6" variants={staggerChildren} initial="hidden" animate="visible">
-                {[
-                  { icon: Sparkles, title: 'Elige tu Curso', description: 'Catálogo actualizado con cursos certificados', color: C.accent },
-                  { icon: Play, title: 'Aprende Online', description: 'Acceso 24/7 a nuestra plataforma LUMEN', color: C.secondary },
-                  { icon: Award, title: 'Certifícate', description: 'Obtén certificación oficial validada', color: C.primary },
-                ].map((item, idx) => (
-                  <motion.div key={idx} variants={fadeInUp}>
-                    <motion.div whileHover={{ y: -8 }} transition={{ duration: 0.3 }}>
-                      <Card className="p-6 h-full border-2 hover:shadow-lg transition-shadow">
-                        <motion.div className="mb-4" whileHover={{ scale: 1.1, rotate: -5 }}>
-                          <item.icon className="w-12 h-12" style={{ color: item.color }} />
-                        </motion.div>
-                        <h3 className="text-xl font-bold mb-3" style={{ color: C.textPrimary }}>{item.title}</h3>
-                        <p style={{ color: C.textSecondary }}>{item.description}</p>
-                      </Card>
-                    </motion.div>
-                  </motion.div>
-                ))}
-              </motion.div>
-            </TabsContent>
-          </Tabs>
-        </div>
-      </motion.section>
-
-      {/* ── CTA FINAL ── */}
-      <motion.section
-        className="py-20"
-        style={{ background: `linear-gradient(135deg, ${C.primary} 0%, ${C.secondary} 100%)` }}
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-      >
-        <div className="container mx-auto px-4 lg:px-8">
-          <div className="max-w-4xl mx-auto text-center">
-            <motion.h2
-              className="text-3xl md:text-4xl font-bold mb-6 text-white"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-            >
-              ¿Listo para comenzar?
-            </motion.h2>
-            <motion.p
-              className="text-lg text-white/90 mb-8"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-            >
-              Contáctanos y descubre cómo podemos ayudarte a alcanzar tus objetivos
-            </motion.p>
-            <motion.div
-              className="flex flex-col sm:flex-row gap-4 justify-center"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-            >
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button size="lg" className="bg-white hover:bg-gray-100 font-semibold" style={{ color: C.primary }} asChild>
-                  <Link href="/empresas">
-                    Soy Empresa
-                    <ArrowRight className="ml-2 w-5 h-5" />
-                  </Link>
-                </Button>
-              </motion.div>
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-2 font-semibold"
-                  style={{ borderColor: 'white', color: 'white', backgroundColor: 'transparent' }}
-                  asChild
-                >
-                  <Link href="/educacion-continua">
-                    Busco Curso Individual
-                    <ArrowRight className="ml-2 w-5 h-5" />
-                  </Link>
-                </Button>
-              </motion.div>
-            </motion.div>
-
-            <motion.div
-              className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-6 text-white/80"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.4 }}
-            >
-              <a href="tel:+56955222430" className="flex items-center gap-2 hover:text-white transition-colors">
-                <Phone className="w-4 h-4" />
-                +56 9 5522 2430
-              </a>
-              <span className="hidden sm:block opacity-40">|</span>
-              <a href="mailto:contacto@elpoderdecrear.cl" className="hover:text-white transition-colors">
-                contacto@elpoderdecrear.cl
-              </a>
-            </motion.div>
-          </div>
-        </div>
-      </motion.section>
-
+      {/* SECCIÓN: INSTRUCTORES */}
+      <InstructorsSection />
     </div>
   );
 }
