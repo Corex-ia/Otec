@@ -963,7 +963,9 @@ export default function NewHomePageDynamic() {
               </div>
 
               {/* Cards Flotantes — patrón dado: logo al centro, 4 cards en esquinas */}
-              <div className="relative hidden lg:block" style={{ height: "420px" }}>
+              {/* self-stretch hace que esta columna tome la altura exacta de la columna izquierda */}
+              <div className="hidden lg:block self-stretch relative" style={{ minHeight: "400px" }}>
+              <div className="absolute inset-0">
 
                 {/* CENTRO: Logo OTEC — box recortado, logo mismo tamaño */}
                 <motion.div className="absolute rounded-2xl shadow-2xl overflow-hidden"
@@ -1053,7 +1055,8 @@ export default function NewHomePageDynamic() {
                     Público y privado
                   </div>
                 </motion.div>
-              </div>
+              </div>{/* cierre absolute inset-0 */}
+              </div>{/* cierre self-stretch wrapper */}
             </div>
           </div>
         </div>
