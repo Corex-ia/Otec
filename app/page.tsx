@@ -963,25 +963,24 @@ export default function NewHomePageDynamic() {
               </div>
 
               {/* Cards Flotantes — patrón dado: logo al centro, 4 cards en esquinas */}
-              <div className="relative hidden lg:block" style={{ height: "460px" }}>
+              <div className="relative hidden lg:block" style={{ height: "420px" }}>
 
-                {/* CENTRO: Logo OTEC */}
-                <motion.div className="absolute p-4 rounded-2xl shadow-2xl"
+                {/* CENTRO: Logo OTEC — box recortado, logo mismo tamaño */}
+                <motion.div className="absolute rounded-2xl shadow-2xl overflow-hidden"
                   style={{
                     backgroundColor: "white",
                     border: `2px solid ${CorporateColors.borderLight}`,
-                    width: "170px", height: "170px",
+                    width: "130px", height: "130px",
                     top: "50%", left: "50%",
                     transform: "translate(-50%, -50%)",
                     zIndex: 10,
+                    padding: "6px",
                   }}
                   animate={{ scale: [1, 1.03, 1] }}
                   transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
                 >
-                  <div className="w-full h-full flex items-center justify-center">
-                    <img src="/logo-otec.png" alt="El Poder de Crear - OTEC"
-                      className="w-full h-full" style={{ objectFit: "contain" }} />
-                  </div>
+                  <img src="/logo-otec.png" alt="El Poder de Crear - OTEC"
+                    style={{ width: "100%", height: "100%", objectFit: "contain" }} />
                 </motion.div>
 
                 {/* ESQUINA arriba-izquierda — 95% Satisfacción (naranja) */}
