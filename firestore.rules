@@ -1,0 +1,131 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper: check if user is authenticated
+    function isAuth() {
+      return request.auth != null;
+    }
+
+    // Helper: get the caller's profile role
+    function getRole() {
+      return get(/databases/$(database)/documents/profiles/$(request.auth.uid)).data.role;
+    }
+
+    function isAdmin() {
+      return isAuth() && getRole() == 'admin';
+    }
+
+    function isInstructor() {
+      return isAuth() && getRole() == 'instructor';
+    }
+
+    function isStudent() {
+      return isAuth() && getRole() == 'student';
+    }
+
+    // ─── profiles ────────────────────────────────────────────────
+    match /profiles/{userId} {
+      allow read: if isAuth();
+      allow write: if isAdmin() || request.auth.uid == userId;
+    }
+
+    // ─── courses ─────────────────────────────────────────────────
+    match /courses/{courseId} {
+      allow read: if isAuth();
+      // Admin full write; instructor can write if they own the course
+      allow write: if isAdmin()
+        || (isInstructor() && (
+              !resource.data.keys().hasAll(['instructor_id'])
+              || resource.data.instructor_id == request.auth.uid
+           ));
+      allow create: if isAdmin() || isInstructor();
+    }
+
+    // ─── modules ─────────────────────────────────────────────────
+    match /modules/{moduleId} {
+      allow read: if isAuth();
+      allow write: if isAdmin() || isInstructor();
+    }
+
+    // ─── lessons ─────────────────────────────────────────────────
+    match /lessons/{lessonId} {
+      allow read: if isAuth();
+      allow write: if isAdmin() || isInstructor();
+    }
+
+    // ─── enrollments ─────────────────────────────────────────────
+    match /enrollments/{enrollmentId} {
+      allow read: if isAdmin()
+        || isInstructor()
+        || (isAuth() && resource.data.user_id == request.auth.uid);
+      allow create: if isAdmin() || isInstructor();
+      allow update: if isAdmin()
+        || isInstructor()
+        || (isAuth() && resource.data.user_id == request.auth.uid);
+      allow delete: if isAdmin();
+    }
+
+    // ─── lesson_progress ─────────────────────────────────────────
+    match /lesson_progress/{progressId} {
+      allow read: if isAdmin()
+        || isInstructor()
+        || (isAuth() && resource.data.user_id == request.auth.uid);
+      allow write: if isAdmin()
+        || isInstructor()
+        || (isAuth() && request.resource.data.user_id == request.auth.uid);
+    }
+
+    // ─── notifications ───────────────────────────────────────────
+    match /notifications/{notifId} {
+      allow read: if isAuth() && (
+        isAdmin()
+        || isInstructor()
+        || resource.data.user_id == request.auth.uid
+      );
+      allow create: if isAdmin() || isInstructor();
+      allow update, delete: if isAdmin() || isInstructor();
+    }
+
+    // ─── attendance ──────────────────────────────────────────────
+    match /attendance/{attendanceId} {
+      allow read: if isAdmin() || isInstructor()
+        || (isAuth() && resource.data.user_id == request.auth.uid);
+      allow write: if isAuth();
+    }
+
+    // ─── submissions ─────────────────────────────────────────────
+    match /submissions/{subId} {
+      allow read: if isAdmin()
+        || isInstructor()
+        || (isAuth() && resource.data.user_id == request.auth.uid);
+      allow write: if isAdmin()
+        || isInstructor()
+        || (isAuth() && request.resource.data.user_id == request.auth.uid);
+    }
+
+    // ─── certificates ────────────────────────────────────────────
+    match /certificates/{certId} {
+      allow read: if isAuth();
+      allow write: if isAdmin();
+    }
+
+    // ─── CRM: events, deals, companies, tasks ────────────────────
+    match /events/{eventId} {
+      allow read, write: if isAdmin() || isInstructor();
+    }
+
+    match /deals/{dealId} {
+      allow read, write: if isAdmin();
+    }
+
+    match /companies/{companyId} {
+      allow read, write: if isAdmin();
+    }
+
+    match /tasks/{taskId} {
+      allow read, write: if isAdmin();
+    }
+  }
+}
