@@ -1,68 +1,69 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { Mail, Phone, MapPin } from 'lucide-react';
+import { Mail, Phone, MapPin, Clock } from 'lucide-react';
 
-const FOOTER_LINKS = [
-  { name: 'Empresas', href: '/empresas' },
+const QUICK_LINKS = [
+  { name: 'Inicio', href: '/' },
+  { name: 'Para Empresas', href: '/empresas' },
+  { name: 'Catálogo de Cursos', href: '/cursos' },
+  { name: 'ATE / SENCE', href: '/sence' },
+  { name: 'Casos de Éxito', href: '/nosotros' },
+];
+
+const SERVICES = [
+  { name: 'Capacitación Empresarial', href: '/empresas' },
   { name: 'Educación Continua', href: '/educacion-continua' },
-  { name: 'Cursos', href: '/cursos' },
-  { name: 'SENCE', href: '/sence' },
-  { name: 'Nosotros', href: '/nosotros' },
-  { name: 'Contacto', href: '/contacto' },
+  { name: 'Modalidades', href: '/cursos' },
+  { name: 'Campus Virtual Aula Virtual', href: '/lumen' },
+  { name: 'Agendar Reunión', href: '/contacto' },
 ];
 
 export function CorporateFooter() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer style={{ background: '#F8F7FF', borderTop: '1px solid #C8D3EE' }}>
-      <div className="container mx-auto px-4 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-          <div className="space-y-4">
-            <div className="flex items-center">
+    <footer style={{ background: '#1a1040', color: '#fff' }}>
+      <div className="container mx-auto px-4 lg:px-8 py-14">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
+
+          {/* Logo + descripción */}
+          <div className="md:col-span-1 space-y-4">
+            <Link href="/" className="inline-block">
               <Image
                 src="/logo-otec.png"
                 alt="OTEC El Poder de Crear"
                 width={160}
                 height={52}
-                className="h-10 w-auto object-contain"
+                className="h-12 w-auto object-contain brightness-0 invert"
               />
-            </div>
-            <p className="text-sm text-[#3A4A7A] leading-relaxed max-w-xs">
-              Organismo Técnico de Capacitación certificado bajo la Norma Chilena NCh 2728:2015.
+            </Link>
+            <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.65)' }}>
+              Organismo Técnico de Capacitación certificado bajo la Norma Chilena NCh 2728:2015 y acreditado por el SENCE.
             </p>
-            <div className="space-y-2">
-              <a
-                href="tel:+56912345678"
-                className="flex items-center gap-2 text-sm text-[#3A4A7A] hover:text-[#1E2E8C] transition-colors"
-              >
-                <Phone className="h-3.5 w-3.5 text-[#FF8C42]" />
-                +56 9 1234 5678
-              </a>
-              <a
-                href="mailto:contacto@otec.cl"
-                className="flex items-center gap-2 text-sm text-[#3A4A7A] hover:text-[#1E2E8C] transition-colors"
-              >
-                <Mail className="h-3.5 w-3.5 text-[#FF8C42]" />
-                contacto@otec.cl
-              </a>
-              <span className="flex items-center gap-2 text-sm text-[#3A4A7A]">
-                <MapPin className="h-3.5 w-3.5 text-[#FF8C42]" />
-                Santiago, Chile
+            <div className="flex gap-2 mt-2">
+              <span className="text-[10px] font-semibold px-2 py-1 rounded-full" style={{ background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.8)' }}>
+                NCh 2728:2015
+              </span>
+              <span className="text-[10px] font-semibold px-2 py-1 rounded-full" style={{ background: 'rgba(255,140,66,0.2)', color: '#FF8C42' }}>
+                SENCE
               </span>
             </div>
           </div>
 
+          {/* Enlaces rápidos */}
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-widest text-[#7A8AB0] mb-4">
-              Navegacion
+            <h4 className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: 'rgba(255,255,255,0.45)' }}>
+              Enlaces Rápidos
             </h4>
-            <nav className="grid grid-cols-2 gap-x-4 gap-y-2">
-              {FOOTER_LINKS.map((link) => (
+            <nav className="flex flex-col gap-2">
+              {QUICK_LINKS.map((link) => (
                 <Link
                   key={link.name}
                   href={link.href}
-                  className="text-sm text-[#3A4A7A] hover:text-[#1E2E8C] transition-colors"
+                  className="text-sm transition-colors"
+                  style={{ color: 'rgba(255,255,255,0.65)' }}
+                  onMouseOver={(e) => (e.currentTarget.style.color = '#FF8C42')}
+                  onMouseOut={(e) => (e.currentTarget.style.color = 'rgba(255,255,255,0.65)')}
                 >
                   {link.name}
                 </Link>
@@ -70,56 +71,64 @@ export function CorporateFooter() {
             </nav>
           </div>
 
+          {/* Servicios */}
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-widest text-[#7A8AB0] mb-4">
-              Plataformas
+            <h4 className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: 'rgba(255,255,255,0.45)' }}>
+              Servicios
             </h4>
-            <div className="space-y-2.5">
-              <Link
-                href="/lumen"
-                className="flex items-center gap-2 text-sm text-[#3A4A7A] hover:text-[#1E2E8C] transition-colors"
-              >
-                <div className="h-1.5 w-1.5 rounded-full bg-[#1E2E8C]" />
-                Aula Virtual
-              </Link>
-              <Link
-                href="/crm"
-                className="flex items-center gap-2 text-sm text-[#3A4A7A] hover:text-[#1E2E8C] transition-colors"
-              >
-                <div className="h-1.5 w-1.5 rounded-full bg-[#FF8C42]" />
-                Portal CRM Interno
-              </Link>
-              <Link
-                href="/auth/login"
-                className="flex items-center gap-2 text-sm text-[#3A4A7A] hover:text-[#1E2E8C] transition-colors"
-              >
-                <div className="h-1.5 w-1.5 rounded-full bg-[#2F5E9E]" />
-                Acceso Alumnos
-              </Link>
+            <nav className="flex flex-col gap-2">
+              {SERVICES.map((link) => (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  className="text-sm transition-colors"
+                  style={{ color: 'rgba(255,255,255,0.65)' }}
+                  onMouseOver={(e) => (e.currentTarget.style.color = '#FF8C42')}
+                  onMouseOut={(e) => (e.currentTarget.style.color = 'rgba(255,255,255,0.65)')}
+                >
+                  {link.name}
+                </Link>
+              ))}
+            </nav>
+          </div>
+
+          {/* Contacto */}
+          <div>
+            <h4 className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: 'rgba(255,255,255,0.45)' }}>
+              Contacto
+            </h4>
+            <div className="flex flex-col gap-3">
+              <a href="tel:+56955222430" className="flex items-start gap-2 text-sm transition-colors" style={{ color: 'rgba(255,255,255,0.65)' }}>
+                <Phone className="h-4 w-4 mt-0.5 shrink-0 text-[#FF8C42]" />
+                +56 9 5522 2430
+              </a>
+              <a href="mailto:contacto@elpoderdecrear.cl" className="flex items-start gap-2 text-sm transition-colors" style={{ color: 'rgba(255,255,255,0.65)' }}>
+                <Mail className="h-4 w-4 mt-0.5 shrink-0 text-[#FF8C42]" />
+                contacto@elpoderdecrear.cl
+              </a>
+              <span className="flex items-start gap-2 text-sm" style={{ color: 'rgba(255,255,255,0.65)' }}>
+                <MapPin className="h-4 w-4 mt-0.5 shrink-0 text-[#FF8C42]" />
+                Santiago, Chile — Cobertura Nacional
+              </span>
+              <span className="flex items-start gap-2 text-sm" style={{ color: 'rgba(255,255,255,0.65)' }}>
+                <Clock className="h-4 w-4 mt-0.5 shrink-0 text-[#FF8C42]" />
+                Lun - Vie: 9:00 - 18:00<br />Soporte 24/7 online
+              </span>
             </div>
           </div>
         </div>
 
-        <div
-          className="mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3"
-          style={{ borderTop: '1px solid #C8D3EE' }}
-        >
-          <p className="text-xs text-[#7A8AB0]">
-            &copy; {currentYear} OTEC El Poder de Crear. Todos los derechos reservados.
+        <div className="mt-12 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3" style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+          <p className="text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>
+            &copy; {currentYear} El Poder de Crear. Todos los derechos reservados.
           </p>
-          <div className="flex items-center gap-1.5">
-            <span
-              className="text-[10px] font-semibold px-2 py-0.5 rounded-full text-[#1E2E8C]"
-              style={{ background: '#EBF0FF' }}
-            >
-              ACREDITADO SENCE
-            </span>
-            <span
-              className="text-[10px] font-semibold px-2 py-0.5 rounded-full text-[#FF8C42]"
-              style={{ background: '#FFF3E8' }}
-            >
-              NCh 2728:2015
-            </span>
+          <div className="flex items-center gap-4">
+            <Link href="/privacidad" className="text-xs transition-colors" style={{ color: 'rgba(255,255,255,0.4)' }}>
+              Política de Privacidad
+            </Link>
+            <Link href="/terminos" className="text-xs transition-colors" style={{ color: 'rgba(255,255,255,0.4)' }}>
+              Términos y Condiciones
+            </Link>
           </div>
         </div>
       </div>

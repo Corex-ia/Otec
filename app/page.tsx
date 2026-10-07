@@ -12,10 +12,10 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
-// ── Design tokens (colores originales del sitio corporativo) ──────────────────
+// ── Design tokens (paleta Figma validada por cliente) ─────────────────────────
 const C = {
   primary:       '#5D3FD3',
-  primaryLight:  '#E8E3FF',
+  primaryLight:  '#F0ECFF',
   primaryDark:   '#4A2FB8',
   secondary:     '#6B5CE7',
   accent:        '#FF8C42',
@@ -99,10 +99,10 @@ export default function HomePage() {
     <div className="min-h-screen">
 
       {/* ── Hero ── */}
-      <section id="inicio" className="pt-8 pb-20 relative overflow-hidden" style={{ backgroundColor: C.primary }}>
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-20 right-20 w-96 h-96 rounded-full blur-3xl" style={{ backgroundColor: C.accent }} />
-          <div className="absolute bottom-20 left-20 w-96 h-96 rounded-full blur-3xl" style={{ backgroundColor: C.secondary }} />
+      <section id="inicio" className="pt-16 pb-20 relative overflow-hidden" style={{ background: C.primary }}>
+        <div className="absolute inset-0" style={{ pointerEvents: 'none' }}>
+          <div className="absolute rounded-full" style={{ top: -100, right: -100, width: 600, height: 600, background: 'rgba(255,140,66,0.30)', filter: 'blur(100px)' }} />
+          <div className="absolute rounded-full" style={{ bottom: -100, left: -100, width: 500, height: 500, background: 'rgba(107,92,231,0.50)', filter: 'blur(100px)' }} />
         </div>
 
         <div className="container mx-auto px-4 relative z-10">
@@ -113,23 +113,30 @@ export default function HomePage() {
                 OTEC Certificada SENCE
               </Badge>
 
-              <h1 className="text-5xl lg:text-6xl font-bold mb-6 leading-tight" style={{ color: 'white' }}>
-                Transformamos el Talento de tu Empresa
+              <h1 className="text-5xl lg:text-6xl font-bold mb-4 leading-tight" style={{ color: 'white' }}>
+                El Poder de{' '}
+                <span style={{ color: C.accent }}>Crear</span>
               </h1>
 
-              <p className="text-xl mb-8 leading-relaxed" style={{ color: 'rgba(255,255,255,.9)' }}>
-                Campus Virtual LMS de última generación + Gestión SENCE completa + Capacitación profesional a nivel nacional
+              <p className="text-xl mb-3 font-medium" style={{ color: 'rgba(255,255,255,0.95)' }}>
+                Aprendes hoy, lideras mañana
+              </p>
+
+              <p className="text-base mb-8 leading-relaxed" style={{ color: 'rgba(255,255,255,.80)' }}>
+                Somos un Organismo Técnico de Capacitación (OTEC) certificado bajo la Norma Chilena NCh 2728:2015, especializado en el desarrollo de competencias laborales para empresas y personas.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 mb-12">
-                <Button size="lg" className="text-lg px-8 py-6" style={{ backgroundColor: C.accent, color: 'white', boxShadow: S.xl }}>
-                  <Calendar className="w-5 h-5 mr-2" />
-                  Agendar Demo
+                <Button size="lg" className="text-base px-8 py-6 font-semibold" style={{ backgroundColor: C.accent, color: 'white', boxShadow: S.xl }} asChild>
+                  <Link href="/empresas">
+                    Soluciones para Empresas
+                    <ChevronRight className="w-5 h-5 ml-1" />
+                  </Link>
                 </Button>
-                <Button size="lg" variant="outline" className="text-lg px-8 py-6" style={{ borderColor: 'white', color: 'white', backgroundColor: 'transparent', borderWidth: '2px' }} asChild>
+                <Button size="lg" variant="outline" className="text-base px-8 py-6 font-semibold" style={{ borderColor: 'white', color: 'white', backgroundColor: 'transparent', borderWidth: '2px' }} asChild>
                   <Link href="/cursos">
-                    <BookOpen className="w-5 h-5 mr-2" />
-                    Ver Catálogo
+                    Cursos Individuales
+                    <ChevronRight className="w-5 h-5 ml-1" />
                   </Link>
                 </Button>
               </div>
@@ -490,7 +497,7 @@ export default function HomePage() {
                     { label: 'Nombre completo',   type: 'text',  placeholder: 'Juan Pérez' },
                     { label: 'Email corporativo',  type: 'email', placeholder: 'juan@empresa.cl' },
                     { label: 'Empresa',            type: 'text',  placeholder: 'Nombre de la empresa' },
-                    { label: 'Teléfono',           type: 'tel',   placeholder: '+56 9 1234 5678' },
+                    { label: 'Teléfono',           type: 'tel',   placeholder: '+56 9 5522 2430' },
                   ].map((f) => (
                     <div key={f.label}>
                       <label className="block text-sm font-medium mb-2" style={{ color: C.textPrimary }}>{f.label}</label>

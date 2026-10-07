@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
-import { Menu, X, ShoppingCart, LogOut, BookOpen, LayoutDashboard, Presentation } from 'lucide-react';
+import { Menu, X, ShoppingCart, LogOut, BookOpen, LayoutDashboard, Presentation, Phone, Mail, GraduationCap, BadgeCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCartStore } from '@/lib/stores/cart-store';
 import { useAuthStore } from '@/lib/stores/auth-store';
@@ -20,11 +20,12 @@ import {
 import { useRouter } from 'next/navigation';
 
 const NAV_LINKS = [
+  { name: 'Nosotros', href: '/nosotros' },
   { name: 'Empresas', href: '/empresas' },
+  { name: 'ATE', href: '/sence' },
   { name: 'Educación Continua', href: '/educacion-continua' },
   { name: 'Cursos', href: '/cursos' },
-  { name: 'SENCE', href: '/sence' },
-  { name: 'Nosotros', href: '/nosotros' },
+  { name: 'Eventos', href: '/eventos' },
 ];
 
 function AuthSection() {
@@ -54,13 +55,13 @@ function AuthSection() {
 
   if (!user) {
     return (
-      <div className="hidden md:flex items-center gap-3">
+      <div className="hidden md:flex items-center gap-2">
         <Button
-          variant="ghost"
+          variant="outline"
           asChild
-          className="text-sm font-medium text-[#3A4A7A] hover:text-[#1E2E8C] hover:bg-[#EBF0FF]"
+          className="text-sm font-medium text-[#5D3FD3] border-[#5D3FD3] hover:bg-[#F0ECFF] hover:text-[#4A2FB8]"
         >
-          <Link href="/auth/login">Ingresar</Link>
+          <Link href="/contacto">Cotizar</Link>
         </Button>
         <Button
           asChild
@@ -295,16 +296,45 @@ export function CorporateHeader() {
   }, []);
 
   return (
-    <header
-      className="sticky top-0 z-50 w-full transition-all duration-300"
-      style={{
-        background: 'rgba(255, 255, 255, 0.97)',
-        backdropFilter: 'blur(16px)',
-        WebkitBackdropFilter: 'blur(16px)',
-        borderBottom: scrolled ? '1px solid #C8D3EE' : '1px solid rgba(228, 225, 245, 0.5)',
-        boxShadow: scrolled ? '0 2px 20px rgba(93, 63, 211, 0.08)' : 'none',
-      }}
-    >
+    <header className="sticky top-0 z-50 w-full transition-all duration-300">
+      {/* Barra superior */}
+      <div style={{ background: '#5D3FD3' }}>
+        <div className="container mx-auto px-4 lg:px-8">
+          <div className="flex items-center justify-between h-9 text-xs text-white/90">
+            <div className="flex items-center gap-5">
+              <a href="tel:+56955222430" className="flex items-center gap-1.5 hover:text-white transition-colors">
+                <Phone className="h-3 w-3" />
+                +56 9 5522 2430
+              </a>
+              <a href="mailto:contacto@elpoderdecrear.cl" className="flex items-center gap-1.5 hover:text-white transition-colors">
+                <Mail className="h-3 w-3" />
+                contacto@elpoderdecrear.cl
+              </a>
+            </div>
+            <div className="hidden md:flex items-center gap-5">
+              <Link href="/lumen" className="flex items-center gap-1.5 font-medium hover:text-white transition-colors">
+                <GraduationCap className="h-3.5 w-3.5" />
+                Acceso Aula Virtual
+              </Link>
+              <span className="flex items-center gap-1.5 text-white/70">
+                <BadgeCheck className="h-3 w-3" />
+                OTEC Certificada NCh 2728:2015 | Acreditada por SENCE
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Barra principal */}
+      <div
+        style={{
+          background: 'rgba(255, 255, 255, 0.97)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
+          borderBottom: scrolled ? '1px solid #C8D3EE' : '1px solid rgba(228, 225, 245, 0.5)',
+          boxShadow: scrolled ? '0 2px 20px rgba(93, 63, 211, 0.08)' : 'none',
+        }}
+      >
       <div className="container mx-auto px-4 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center gap-8 lg:gap-10">
@@ -364,6 +394,7 @@ export function CorporateHeader() {
         {mounted && (
           <MobileMenu open={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
         )}
+      </div>
       </div>
     </header>
   );

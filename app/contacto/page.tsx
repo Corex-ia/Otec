@@ -12,8 +12,8 @@ const CONTACT_INFO = [
   {
     icon: Phone,
     label: 'Teléfono',
-    value: '+56 9 1234 5678',
-    href: 'tel:+56912345678',
+    value: '+56 9 5522 2430',
+    href: 'tel:+56955222430',
     color: '#1E2E8C',
     bg: '#EBF0FF',
   },
