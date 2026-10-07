@@ -962,58 +962,40 @@ export default function NewHomePageDynamic() {
                 </motion.div>
               </div>
 
-              {/* Cards Flotantes con Info */}
+              {/* Cards Flotantes — patrón dado: logo al centro, cards en las 4 esquinas */}
               <div
                 className="relative hidden lg:block"
-                style={{
-                  height: "480px",
-                  width: "100%",
-                  maxWidth: "680px",
-                  margin: "0 auto",
-                }}
+                style={{ height: "460px", width: "100%", maxWidth: "560px", margin: "0 auto" }}
               >
-                {/* Card Logo OTEC - Lado Izquierdo, centrado verticalmente */}
+                {/* CENTRO: Logo OTEC */}
                 <motion.div
-                  className="absolute p-5 rounded-2xl shadow-2xl"
+                  className="absolute p-4 rounded-2xl shadow-2xl"
                   style={{
                     backgroundColor: "white",
                     border: `2px solid ${CorporateColors.borderLight}`,
-                    width: "220px",
-                    height: "220px",
-                    top: "50%",
-                    left: "0",
-                    transform: "translateY(-50%)",
+                    width: "180px", height: "180px",
+                    top: "50%", left: "50%",
+                    transform: "translate(-50%, -50%)",
                     zIndex: 10,
                   }}
-                  animate={{ y: [0, -8, 0] }}
+                  animate={{ scale: [1, 1.03, 1] }}
                   transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
                 >
                   <div className="w-full h-full flex items-center justify-center">
-                    <img
-                      src="/logo-otec.png"
-                      alt="El Poder de Crear - OTEC"
-                      className="w-full h-full"
-                      style={{ objectFit: "contain", maxWidth: "100%", maxHeight: "100%" }}
-                    />
+                    <img src="/logo-otec.png" alt="El Poder de Crear - OTEC"
+                      className="w-full h-full" style={{ objectFit: "contain" }} />
                   </div>
                 </motion.div>
 
-                {/* Grid 2×2 de cards info — columna izquierda: right:175px, columna derecha: right:5px */}
-
-                {/* Card A — arriba izquierda del grid: 95% Satisfacción (naranja) */}
-                <motion.div
-                  className="absolute p-4 rounded-2xl shadow-xl"
+                {/* ESQUINA: arriba-izquierda — 95% Satisfacción (naranja) */}
+                <motion.div className="absolute p-4 rounded-2xl shadow-xl"
                   style={{
-                    background: "rgba(255, 107, 53, 0.15)",
-                    backdropFilter: "blur(10px)",
-                    border: "1px solid rgba(255, 107, 53, 0.3)",
-                    width: "158px",
-                    top: "30px",
-                    right: "172px",
-                    zIndex: 5,
+                    background: "rgba(255, 107, 53, 0.15)", backdropFilter: "blur(10px)",
+                    border: "1px solid rgba(255, 107, 53, 0.3)", width: "152px",
+                    top: "16px", left: "0", zIndex: 5,
                   }}
                   animate={{ y: [0, -6, 0] }}
-                  transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+                  transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0 }}
                 >
                   <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-2 mx-auto" style={{ backgroundColor: "rgba(255, 107, 53, 0.3)" }}>
                     <Star className="w-5 h-5" style={{ color: "#FF6B35" }} />
@@ -1023,20 +1005,15 @@ export default function NewHomePageDynamic() {
                   <div className="text-xs text-white/70 text-center leading-tight">Relatores especializados</div>
                 </motion.div>
 
-                {/* Card B — arriba derecha del grid: Soporte Continuo (púrpura) */}
-                <motion.div
-                  className="absolute p-4 rounded-2xl shadow-xl"
+                {/* ESQUINA: arriba-derecha — Soporte Continuo (púrpura) */}
+                <motion.div className="absolute p-4 rounded-2xl shadow-xl"
                   style={{
-                    background: "rgba(107, 92, 231, 0.15)",
-                    backdropFilter: "blur(10px)",
-                    border: "1px solid rgba(107, 92, 231, 0.3)",
-                    width: "158px",
-                    top: "30px",
-                    right: "5px",
-                    zIndex: 5,
+                    background: "rgba(107, 92, 231, 0.15)", backdropFilter: "blur(10px)",
+                    border: "1px solid rgba(107, 92, 231, 0.3)", width: "152px",
+                    top: "16px", right: "0", zIndex: 5,
                   }}
-                  animate={{ y: [0, 6, 0] }}
-                  transition={{ duration: 3.6, repeat: Infinity, ease: "easeInOut", delay: 0.8 }}
+                  animate={{ y: [0, -6, 0] }}
+                  transition={{ duration: 3.6, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
                 >
                   <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-2 mx-auto" style={{ backgroundColor: "rgba(107, 92, 231, 0.3)" }}>
                     <Users className="w-5 h-5" style={{ color: "#6B5CE7" }} />
@@ -1045,19 +1022,14 @@ export default function NewHomePageDynamic() {
                   <div className="text-xs text-white/80 text-center leading-tight">Acompañamiento permanente</div>
                 </motion.div>
 
-                {/* Card C — abajo izquierda del grid: Metodologías (cyan) */}
-                <motion.div
-                  className="absolute p-4 rounded-2xl shadow-xl"
+                {/* ESQUINA: abajo-izquierda — Metodologías (cyan) */}
+                <motion.div className="absolute p-4 rounded-2xl shadow-xl"
                   style={{
-                    background: "rgba(0, 217, 255, 0.15)",
-                    backdropFilter: "blur(10px)",
-                    border: "1px solid rgba(0, 217, 255, 0.3)",
-                    width: "158px",
-                    bottom: "30px",
-                    right: "172px",
-                    zIndex: 5,
+                    background: "rgba(0, 217, 255, 0.15)", backdropFilter: "blur(10px)",
+                    border: "1px solid rgba(0, 217, 255, 0.3)", width: "152px",
+                    bottom: "16px", left: "0", zIndex: 5,
                   }}
-                  animate={{ x: [0, 5, 0] }}
+                  animate={{ y: [0, 6, 0] }}
                   transition={{ duration: 3.8, repeat: Infinity, ease: "easeInOut", delay: 1 }}
                 >
                   <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-2 mx-auto" style={{ backgroundColor: "rgba(0, 217, 255, 0.3)" }}>
@@ -1067,19 +1039,14 @@ export default function NewHomePageDynamic() {
                   <div className="text-xs text-white/80 text-center leading-tight">Enfoque práctico</div>
                 </motion.div>
 
-                {/* Card D — abajo derecha del grid: Experiencia multisectorial (rosa) */}
-                <motion.div
-                  className="absolute p-4 rounded-2xl shadow-xl"
+                {/* ESQUINA: abajo-derecha — Experiencia multisectorial (rosa) */}
+                <motion.div className="absolute p-4 rounded-2xl shadow-xl"
                   style={{
-                    background: "rgba(230, 62, 150, 0.15)",
-                    backdropFilter: "blur(10px)",
-                    border: "1px solid rgba(230, 62, 150, 0.3)",
-                    width: "158px",
-                    bottom: "30px",
-                    right: "5px",
-                    zIndex: 5,
+                    background: "rgba(230, 62, 150, 0.15)", backdropFilter: "blur(10px)",
+                    border: "1px solid rgba(230, 62, 150, 0.3)", width: "152px",
+                    bottom: "16px", right: "0", zIndex: 5,
                   }}
-                  animate={{ x: [0, -5, 0] }}
+                  animate={{ y: [0, 6, 0] }}
                   transition={{ duration: 3.3, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
                 >
                   <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-2 mx-auto" style={{ backgroundColor: "rgba(230, 62, 150, 0.3)" }}>
