@@ -1,11 +1,16 @@
 'use client';
-
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { motion } from 'motion/react';
+import {
+  GraduationCap, Users, Clock, Award, CheckCircle, ArrowRight,
+  BookOpen, Star, Zap, Target, TrendingUp, Heart, Shield,
+  Play, Laptop
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Clock, BadgeCheck, Monitor, HeadphonesIcon, ArrowRight } from 'lucide-react';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
-const C = {
+const CorporateColors = {
   primary: '#5D3FD3',
   primaryLight: '#F0ECFF',
   secondary: '#6B5CE7',
@@ -15,301 +20,565 @@ const C = {
   textSecondary: '#6B7280',
   bgLight: '#F9FAFB',
   border: '#E5E7EB',
+  white: '#FFFFFF',
+  black: '#000000',
+  success: '#10B981',
+  warning: '#F59E0B',
+  error: '#EF4444',
+};
+const CorporateShadow = {
+  sm: '0 1px 2px 0 rgba(0,0,0,0.05)',
+  md: '0 4px 6px -1px rgba(0,0,0,0.1)',
+  lg: '0 10px 15px -3px rgba(0,0,0,0.1)',
+  xl: '0 20px 25px -5px rgba(0,0,0,0.1)',
 };
 
-const BENEFITS = [
-  {
-    icon: Clock,
-    title: 'Horarios Flexibles',
-    desc: 'Estudia cuando quieras. Nuestro aula virtual está disponible las 24 horas, adaptándose a tu ritmo y agenda profesional.',
-    color: C.primary,
-    bg: C.primaryLight,
-  },
-  {
-    icon: BadgeCheck,
-    title: 'Certificación Oficial',
-    desc: 'Obtén un certificado reconocido por SENCE y válido en el mercado laboral chileno al completar cada curso.',
-    color: '#059669',
-    bg: '#ECFDF5',
-  },
-  {
-    icon: Monitor,
-    title: 'Plataforma 24/7',
-    desc: 'Accede a contenidos, videos y materiales desde cualquier dispositivo, en cualquier momento del día o la noche.',
-    color: '#2563EB',
-    bg: '#EFF6FF',
-  },
-  {
-    icon: HeadphonesIcon,
-    title: 'Soporte Continuo',
-    desc: 'Tutores y equipo de soporte disponibles para responder tus dudas y acompañarte durante todo el proceso.',
-    color: C.accent,
-    bg: C.accentLight,
-  },
-];
-
-const FEATURED_COURSES = [
-  {
-    emoji: '💼',
-    title: 'Gestión de Equipos de Alto Rendimiento',
-    category: 'Liderazgo',
-    duration: '24 horas',
-    level: 'Intermedio',
-    color: C.primary,
-    bg: C.primaryLight,
-  },
-  {
-    emoji: '📊',
-    title: 'Excel Avanzado para Profesionales',
-    category: 'Tecnología',
-    duration: '20 horas',
-    level: 'Avanzado',
-    color: '#2563EB',
-    bg: '#EFF6FF',
-  },
-  {
-    emoji: '🗣️',
-    title: 'Comunicación Efectiva en el Trabajo',
-    category: 'Habilidades Blandas',
-    duration: '16 horas',
-    level: 'Básico',
-    color: '#059669',
-    bg: '#ECFDF5',
-  },
-];
-
-const STEPS = [
-  { step: '01', title: 'Elige tu curso', desc: 'Explora nuestro catálogo y selecciona el programa que mejor se adapte a tus objetivos profesionales.' },
-  { step: '02', title: 'Inscríbete', desc: 'Completa el proceso de inscripción en minutos. Recibe acceso inmediato al aula virtual y los materiales.' },
-  { step: '03', title: 'Certifícate', desc: 'Completa el curso, aprueba la evaluación y obtén tu certificado oficial reconocido por SENCE.' },
-];
-
-const STATS = [
-  { value: '70+', label: 'Cursos disponibles' },
-  { value: '5K+', label: 'Alumnos activos' },
-  { value: '95%', label: 'Tasa de satisfacción' },
-  { value: '3', label: 'Modalidades' },
-];
-
 export default function EducacionContinuaPage() {
+  const router = useRouter();
+  const fadeInUp = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] }
+    }
+  };
+
+  const staggerChildren = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.12
+      }
+    }
+  };
+
+  const cursosDestacados = [
+    {
+      titulo: 'Excel Avanzado para Profesionales',
+      modalidad: 'Online',
+      duracion: '40 horas',
+      sence: true,
+      rating: 4.8,
+      precio: 'Consultar',
+      imagen: '💼'
+    },
+    {
+      titulo: 'Gestión de Proyectos PMI',
+      modalidad: 'Híbrido',
+      duracion: '60 horas',
+      sence: true,
+      rating: 4.9,
+      precio: 'Consultar',
+      imagen: '📊'
+    },
+    {
+      titulo: 'Marketing Digital Estratégico',
+      modalidad: 'Online',
+      duracion: '50 horas',
+      sence: true,
+      rating: 4.7,
+      precio: 'Consultar',
+      imagen: '📱'
+    }
+  ];
+
   return (
-    <div className="flex flex-col min-h-screen">
-      {/* HERO */}
-      <section
-        className="relative overflow-hidden py-24"
-        style={{ background: `linear-gradient(135deg, ${C.accent} 0%, ${C.primary} 65%, #3B2BAA 100%)` }}
+    <div className="min-h-screen" style={{ backgroundColor: CorporateColors.bgLight }}>
+
+      {/* HERO B2C */}
+      <motion.section
+        className="relative overflow-hidden py-20 lg:py-32"
+        style={{
+          background: 'linear-gradient(135deg, #FF8C42 0%, #6B5CE7 100%)'
+        }}
+        initial="hidden"
+        animate="visible"
       >
-        <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse at 20% 80%, rgba(255,255,255,0.07) 0%, transparent 55%)' }} />
-        <div className="container mx-auto px-4 lg:px-8 relative z-10">
+        {/* Animated Background */}
+        <div className="absolute inset-0 opacity-20">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="max-w-3xl"
-          >
-            <span
-              className="inline-block text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full mb-6"
-              style={{ background: 'rgba(255,255,255,0.15)', color: '#fff', border: '1px solid rgba(255,255,255,0.3)' }}
-            >
-              Educación Continua — B2C
-            </span>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-              Impulsa tu carrera{' '}
-              <span className="underline decoration-white/40">profesional</span>
-            </h1>
-            <p className="text-lg text-white/85 mb-10 max-w-2xl leading-relaxed">
-              Programas de formación continua en las áreas más demandadas del mercado. Estudia a tu ritmo,
-              certifícate con SENCE y da el salto que tu carrera necesita.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Button
-                size="lg"
-                asChild
-                className="font-semibold group"
-                style={{ background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.4)', color: '#fff' }}
+            className="absolute top-10 right-10 w-96 h-96 rounded-full blur-3xl"
+            style={{ backgroundColor: CorporateColors.primary }}
+            animate={{
+              scale: [1, 1.2, 1],
+              opacity: [0.4, 0.6, 0.4],
+            }}
+            transition={{
+              duration: 8,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+          <motion.div
+            className="absolute bottom-10 left-10 w-80 h-80 rounded-full blur-3xl"
+            style={{ backgroundColor: 'white' }}
+            animate={{
+              scale: [1.1, 1, 1.1],
+              opacity: [0.3, 0.5, 0.3],
+            }}
+            transition={{
+              duration: 12,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+        </div>
+
+        <div className="container mx-auto px-4 lg:px-8 relative z-10">
+          <div className="max-w-4xl mx-auto text-center">
+            <motion.div variants={fadeInUp}>
+              <Badge
+                className="mb-6 text-sm px-4 py-2 border-2"
+                style={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                  color: 'white',
+                  borderColor: 'white'
+                }}
               >
-                <Link href="/cursos">
-                  Explorar cursos
-                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                </Link>
-              </Button>
+                <GraduationCap className="w-4 h-4 mr-2" />
+                Educación Continua
+              </Badge>
+            </motion.div>
+
+            <motion.h1
+              className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-white"
+              variants={fadeInUp}
+            >
+              Impulsa tu{' '}
+              <motion.span
+                className="inline-block relative"
+                animate={{
+                  y: [0, -5, 0],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              >
+                carrera profesional
+                <motion.div
+                  className="absolute -right-8 -top-6"
+                  animate={{ rotate: [0, 15, 0] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  <Heart className="w-8 h-8 text-yellow-300" />
+                </motion.div>
+              </motion.span>
+            </motion.h1>
+
+            <motion.p
+              className="text-lg md:text-xl text-white/95 mb-8 max-w-2xl mx-auto"
+              variants={fadeInUp}
+            >
+              Cursos certificados para tu desarrollo, con horarios flexibles
+              y acceso a nuestra plataforma online 24/7
+            </motion.p>
+
+            <motion.div
+              className="flex flex-col sm:flex-row gap-4 justify-center"
+              variants={fadeInUp}
+            >
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Button
+                  size="lg"
+                  className="bg-white hover:bg-gray-100 font-semibold"
+                  style={{ color: CorporateColors.primary }}
+                  onClick={() => router.push('/cursos')}
+                >
+                  Explorar Cursos
+                  <ArrowRight className="ml-2 w-5 h-5" />
+                </Button>
+              </motion.div>
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border-2 hover:bg-white/10"
+                  style={{
+                    borderColor: 'white',
+                    color: 'white',
+                    backgroundColor: 'transparent'
+                  }}
+                  onClick={() => window.open('https://elpoderdecrear.cl/aulavirtual/', '_blank')}
+                >
+                  Acceder a LUMEN
+                  <Play className="ml-2 w-5 h-5" />
+                </Button>
+              </motion.div>
+            </motion.div>
+          </div>
+        </div>
+      </motion.section>
+
+      {/* BENEFICIOS INDIVIDUALES */}
+      <motion.section
+        className="py-20"
+        style={{ backgroundColor: 'white' }}
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+      >
+        <div className="container mx-auto px-4 lg:px-8">
+          <motion.div
+            className="text-center mb-12"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <Badge
+              className="mb-4"
+              style={{
+                backgroundColor: `${CorporateColors.accent}20`,
+                color: CorporateColors.accent
+              }}
+            >
+              Beneficios
+            </Badge>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: CorporateColors.primary }}>
+              Aprende a tu ritmo
+            </h2>
+            <p className="text-lg max-w-2xl mx-auto" style={{ color: CorporateColors.textSecondary }}>
+              Diseñado para profesionales que buscan crecer
+            </p>
+          </motion.div>
+
+          <motion.div
+            className="grid md:grid-cols-2 lg:grid-cols-4 gap-6"
+            variants={staggerChildren}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+          >
+            {[
+              {
+                icon: Clock,
+                title: 'Horarios Flexibles',
+                description: 'Estudia cuando quieras, donde quieras',
+                color: CorporateColors.accent
+              },
+              {
+                icon: Award,
+                title: 'Certificación Oficial',
+                description: 'Validada y reconocida por SENCE',
+                color: CorporateColors.primary
+              },
+              {
+                icon: Laptop,
+                title: 'Plataforma 24/7',
+                description: 'Acceso completo a LUMEN online',
+                color: CorporateColors.secondary
+              },
+              {
+                icon: Users,
+                title: 'Soporte Continuo',
+                description: 'Tutores y especialistas disponibles',
+                color: CorporateColors.accent
+              }
+            ].map((item, idx) => (
+              <motion.div key={idx} variants={fadeInUp}>
+                <motion.div
+                  whileHover={{ y: -8, scale: 1.02 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <Card className="p-6 h-full text-center border-2 hover:shadow-xl transition-shadow">
+                    <motion.div
+                      className="mb-4 inline-block"
+                      whileHover={{ rotate: 360, scale: 1.2 }}
+                      transition={{ duration: 0.6 }}
+                    >
+                      <item.icon className="w-12 h-12 mx-auto" style={{ color: item.color }} />
+                    </motion.div>
+                    <h3 className="font-bold mb-2" style={{ color: CorporateColors.textPrimary }}>
+                      {item.title}
+                    </h3>
+                    <p className="text-sm" style={{ color: CorporateColors.textSecondary }}>
+                      {item.description}
+                    </p>
+                  </Card>
+                </motion.div>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </motion.section>
+
+      {/* CURSOS DESTACADOS */}
+      <motion.section
+        className="py-20"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+      >
+        <div className="container mx-auto px-4 lg:px-8">
+          <motion.div
+            className="text-center mb-12"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <Badge
+              className="mb-4"
+              style={{
+                backgroundColor: `${CorporateColors.accent}20`,
+                color: CorporateColors.accent
+              }}
+            >
+              Cursos Populares
+            </Badge>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: CorporateColors.primary }}>
+              Comienza hoy
+            </h2>
+          </motion.div>
+
+          <motion.div
+            className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto"
+            variants={staggerChildren}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+          >
+            {cursosDestacados.map((curso, idx) => (
+              <motion.div key={idx} variants={fadeInUp}>
+                <motion.div
+                  whileHover={{ y: -8, scale: 1.02 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <Card
+                    className="overflow-hidden border-2 hover:shadow-xl transition-shadow cursor-pointer"
+                    onClick={() => router.push('/curso-detalle')}
+                  >
+                    {/* Image placeholder */}
+                    <div
+                      className="h-48 flex items-center justify-center text-6xl"
+                      style={{ backgroundColor: CorporateColors.primaryLight }}
+                    >
+                      {curso.imagen}
+                    </div>
+
+                    <div className="p-6">
+                      {curso.sence && (
+                        <Badge
+                          className="mb-3"
+                          style={{
+                            backgroundColor: CorporateColors.primaryLight,
+                            color: CorporateColors.primary
+                          }}
+                        >
+                          <Shield className="w-3 h-3 mr-1" />
+                          SENCE
+                        </Badge>
+                      )}
+
+                      <h3 className="font-bold mb-3 text-lg" style={{ color: CorporateColors.textPrimary }}>
+                        {curso.titulo}
+                      </h3>
+
+                      <div className="flex items-center gap-4 mb-4 text-sm" style={{ color: CorporateColors.textSecondary }}>
+                        <div className="flex items-center gap-1">
+                          <BookOpen className="w-4 h-4" />
+                          {curso.modalidad}
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Clock className="w-4 h-4" />
+                          {curso.duracion}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-1">
+                          <Star className="w-4 h-4 fill-current" style={{ color: '#FFA500' }} />
+                          <span className="font-semibold">{curso.rating}</span>
+                        </div>
+                        <span className="font-bold text-lg" style={{ color: CorporateColors.accent }}>
+                          {curso.precio}
+                        </span>
+                      </div>
+
+                      <Button
+                        className="w-full"
+                        style={{
+                          backgroundColor: CorporateColors.accent,
+                          color: 'white'
+                        }}
+                      >
+                        Inscribirme
+                      </Button>
+                    </div>
+                  </Card>
+                </motion.div>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          <motion.div
+            className="text-center mt-12"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+          >
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button
                 size="lg"
                 variant="outline"
-                asChild
-                className="border-white/30 text-white hover:bg-white/10 hover:text-white font-medium"
+                className="border-2"
+                style={{
+                  borderColor: CorporateColors.accent,
+                  color: CorporateColors.accent
+                }}
+                onClick={() => router.push('/cursos')}
               >
-                <Link href="/lumen">Acceder al aula virtual</Link>
+                Ver Todos los Cursos
+                <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-16 pt-16 border-t border-white/20">
-              {STATS.map((s) => (
-                <div key={s.label} className="text-center">
-                  <div className="text-3xl font-black text-white mb-1">{s.value}</div>
-                  <div className="text-sm text-white/65">{s.label}</div>
-                </div>
-              ))}
-            </div>
+            </motion.div>
           </motion.div>
         </div>
-      </section>
+      </motion.section>
 
-      {/* BENEFICIOS */}
-      <section className="py-20" style={{ background: C.bgLight }}>
+      {/* CÓMO FUNCIONA */}
+      <motion.section
+        className="py-20"
+        style={{ backgroundColor: 'white' }}
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+      >
         <div className="container mx-auto px-4 lg:px-8">
-          <div className="text-center mb-14">
-            <h2 className="text-3xl md:text-4xl font-bold mb-3" style={{ color: C.textPrimary }}>
-              ¿Por qué elegir nuestra plataforma?
+          <motion.div
+            className="text-center mb-12"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <Badge
+              className="mb-4"
+              style={{
+                backgroundColor: `${CorporateColors.accent}20`,
+                color: CorporateColors.accent
+              }}
+            >
+              Proceso Simple
+            </Badge>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: CorporateColors.primary }}>
+              En 3 pasos
             </h2>
-            <p className="text-lg max-w-2xl mx-auto" style={{ color: C.textSecondary }}>
-              Diseñada para que el aprendizaje se adapte a tu vida, no al revés
-            </p>
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
-            {BENEFITS.map((b, i) => (
+          </motion.div>
+
+          <motion.div
+            className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto"
+            variants={staggerChildren}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+          >
+            {[
+              {
+                number: '1',
+                icon: BookOpen,
+                title: 'Elige tu curso',
+                description: 'Explora nuestro catálogo y encuentra el curso ideal para ti'
+              },
+              {
+                number: '2',
+                icon: Play,
+                title: 'Inscríbete',
+                description: 'Proceso rápido online con acceso inmediato a la plataforma'
+              },
+              {
+                number: '3',
+                icon: Award,
+                title: 'Certifícate',
+                description: 'Completa el curso y obtén tu certificación oficial'
+              }
+            ].map((step, idx) => (
               <motion.div
-                key={b.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="p-6 rounded-2xl border hover:shadow-lg transition-all bg-white"
-                style={{ borderColor: C.border }}
+                key={idx}
+                variants={fadeInUp}
+                className="text-center"
               >
-                <div className="h-12 w-12 rounded-xl flex items-center justify-center mb-5" style={{ background: b.bg }}>
-                  <b.icon className="h-6 w-6" style={{ color: b.color }} />
-                </div>
-                <h3 className="text-base font-bold mb-2" style={{ color: C.textPrimary }}>{b.title}</h3>
-                <p className="text-sm leading-relaxed" style={{ color: C.textSecondary }}>{b.desc}</p>
+                <motion.div
+                  className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center text-2xl font-bold"
+                  style={{
+                    backgroundColor: CorporateColors.accent,
+                    color: 'white'
+                  }}
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                >
+                  {step.number}
+                </motion.div>
+                <motion.div
+                  className="inline-block mb-3"
+                  whileHover={{ scale: 1.2, rotate: 360 }}
+                  transition={{ duration: 0.6 }}
+                >
+                  <step.icon className="w-10 h-10 mx-auto" style={{ color: CorporateColors.primary }} />
+                </motion.div>
+                <h3 className="font-bold mb-2 text-lg" style={{ color: CorporateColors.textPrimary }}>
+                  {step.title}
+                </h3>
+                <p className="text-sm" style={{ color: CorporateColors.textSecondary }}>
+                  {step.description}
+                </p>
               </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
-      </section>
-
-      {/* CURSOS DESTACADOS */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-4 lg:px-8">
-          <div className="text-center mb-14">
-            <h2 className="text-3xl md:text-4xl font-bold mb-3" style={{ color: C.textPrimary }}>
-              Cursos más populares
-            </h2>
-            <p className="text-lg max-w-2xl mx-auto" style={{ color: C.textSecondary }}>
-              Los programas más elegidos por nuestros estudiantes este año
-            </p>
-          </div>
-          <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            {FEATURED_COURSES.map((course, i) => (
-              <motion.div
-                key={course.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.12 }}
-                className="p-6 rounded-2xl border hover:shadow-lg transition-all"
-                style={{ background: C.bgLight, borderColor: C.border }}
-              >
-                <div
-                  className="h-14 w-14 rounded-2xl flex items-center justify-center text-2xl mb-5"
-                  style={{ background: course.bg }}
-                >
-                  {course.emoji}
-                </div>
-                <span
-                  className="text-xs font-semibold px-2.5 py-1 rounded-full mb-3 inline-block"
-                  style={{ background: course.bg, color: course.color }}
-                >
-                  {course.category}
-                </span>
-                <h3 className="font-bold mb-3 leading-snug" style={{ color: C.textPrimary }}>{course.title}</h3>
-                <div className="flex gap-3 text-xs" style={{ color: C.textSecondary }}>
-                  <span>⏱ {course.duration}</span>
-                  <span>📈 {course.level}</span>
-                </div>
-                <Link
-                  href="/cursos"
-                  className="flex items-center gap-1 mt-4 text-sm font-semibold transition-colors"
-                  style={{ color: course.color }}
-                >
-                  Ver curso <ArrowRight className="h-3.5 w-3.5" />
-                </Link>
-              </motion.div>
-            ))}
-          </div>
-          <div className="text-center mt-10">
-            <Button asChild size="lg" variant="outline" style={{ borderColor: C.primary, color: C.primary }}>
-              <Link href="/cursos">Ver todos los cursos</Link>
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* PASOS */}
-      <section className="py-20" style={{ background: C.bgLight }}>
-        <div className="container mx-auto px-4 lg:px-8">
-          <div className="text-center mb-14">
-            <h2 className="text-3xl md:text-4xl font-bold mb-3" style={{ color: C.textPrimary }}>
-              ¿Cómo empezar?
-            </h2>
-            <p className="text-lg max-w-2xl mx-auto" style={{ color: C.textSecondary }}>
-              En 3 simples pasos estarás aprendiendo y avanzando en tu carrera
-            </p>
-          </div>
-          <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            {STEPS.map((step, i) => (
-              <motion.div
-                key={step.step}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.15 }}
-                className="relative p-8 rounded-2xl border bg-white text-center"
-                style={{ borderColor: C.border }}
-              >
-                <div className="text-5xl font-black mb-4" style={{ color: `${C.primary}18` }}>{step.step}</div>
-                <h3 className="font-bold text-lg mb-3" style={{ color: C.textPrimary }}>{step.title}</h3>
-                <p className="text-sm leading-relaxed" style={{ color: C.textSecondary }}>{step.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+      </motion.section>
 
       {/* CTA FINAL */}
-      <section
-        className="py-20 text-white"
-        style={{ background: `linear-gradient(135deg, ${C.accent}, ${C.primary})` }}
+      <motion.section
+        className="py-20"
+        style={{
+          background: `linear-gradient(135deg, ${CorporateColors.accent} 0%, ${CorporateColors.primary} 100%)`
+        }}
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
       >
-        <div className="container mx-auto px-4 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Tu próximo paso profesional comienza aquí
-          </h2>
-          <p className="text-white/80 text-lg mb-8 max-w-xl mx-auto">
-            La educación continua es la clave para mantenerte competitivo. Empieza hoy.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button
-              size="lg"
-              asChild
-              className="font-semibold group"
-              style={{ background: '#fff', color: C.primary }}
+        <div className="container mx-auto px-4 lg:px-8">
+          <div className="max-w-3xl mx-auto text-center">
+            <motion.h2
+              className="text-3xl md:text-4xl font-bold mb-6 text-white"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
             >
-              <Link href="/cursos">
-                Ver todos los cursos
-                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              asChild
-              className="border-white/40 text-white hover:bg-white/10 hover:text-white"
+              ¿Listo para comenzar tu transformación?
+            </motion.h2>
+            <motion.p
+              className="text-lg text-white/90 mb-8"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
             >
-              <Link href="/contacto">Más información</Link>
-            </Button>
+              Explora nuestro catálogo y da el primer paso hacia tu desarrollo profesional
+            </motion.p>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+            >
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Button
+                  size="lg"
+                  className="bg-white hover:bg-gray-100"
+                  style={{ color: CorporateColors.accent }}
+                  onClick={() => router.push('/cursos')}
+                >
+                  Ver Catálogo Completo
+                  <ArrowRight className="ml-2 w-5 h-5" />
+                </Button>
+              </motion.div>
+            </motion.div>
           </div>
         </div>
-      </section>
+      </motion.section>
+
     </div>
   );
 }

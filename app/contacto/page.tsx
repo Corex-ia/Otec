@@ -1,24 +1,12 @@
 'use client';
-
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { motion } from 'motion/react';
+import { Mail, Phone, MapPin, Calendar, Clock, MessageSquare, Send, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import {
-  Phone,
-  Mail,
-  MapPin,
-  Clock,
-  ArrowRight,
-  CheckCircle,
-  Calendar,
-  FileText,
-  Users,
-} from 'lucide-react';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
-const C = {
+const CorporateColors = {
   primary: '#5D3FD3',
   primaryLight: '#F0ECFF',
   secondary: '#6B5CE7',
@@ -26,419 +14,594 @@ const C = {
   accentLight: '#FFF0E6',
   textPrimary: '#1F2937',
   textSecondary: '#6B7280',
+  textMuted: '#9CA3AF',
   bgLight: '#F9FAFB',
   border: '#E5E7EB',
+  white: '#FFFFFF',
+  black: '#000000',
+  success: '#10B981',
+  warning: '#F59E0B',
+  error: '#EF4444',
+};
+const CorporateShadow = {
+  sm: '0 1px 2px 0 rgba(0,0,0,0.05)',
+  md: '0 4px 6px -1px rgba(0,0,0,0.1)',
+  lg: '0 10px 15px -3px rgba(0,0,0,0.1)',
+  xl: '0 20px 25px -5px rgba(0,0,0,0.1)',
 };
 
-const CONTACT_METHODS = [
-  {
-    icon: Phone,
-    label: 'Teléfono',
-    value: '+56 9 5522 2430',
-    sub: 'Lun–Vie 9:00–18:00',
-    href: 'tel:+56955222430',
-    color: C.primary,
-    bg: C.primaryLight,
-  },
-  {
-    icon: Mail,
-    label: 'Email',
-    value: 'contacto@elpoderdecrear.cl',
-    sub: 'Respuesta en < 24 h',
-    href: 'mailto:contacto@elpoderdecrear.cl',
-    color: C.accent,
-    bg: C.accentLight,
-  },
-  {
-    icon: MapPin,
-    label: 'Dirección',
-    value: 'Rengo 351 DP 901',
-    sub: 'Los Ángeles, Biobío',
-    href: 'https://www.google.com/maps/search/Rengo+351+Los+Angeles+Chile',
-    color: '#059669',
-    bg: '#ECFDF5',
-  },
-  {
-    icon: Clock,
-    label: 'Horario',
-    value: 'Lun–Vie 9:00–18:00',
-    sub: 'Sáb 9:00–13:00',
-    href: null,
-    color: '#2563EB',
-    bg: '#EFF6FF',
-  },
-];
-
-const QUERY_TYPES = [
-  'Consulta general',
-  'Capacitación empresarial (B2B)',
-  'Inscripción personal (B2C)',
-  'Beneficios SENCE',
-  'Asistencia Técnica (ATE)',
-  'Aula virtual',
-  'Otro',
-];
-
-const COLLABORATOR_OPTIONS = [
-  '1–10 trabajadores',
-  '11–50 trabajadores',
-  '51–100 trabajadores',
-  'Más de 100',
-  'Soy persona natural',
-];
-
-const USEFUL_LINKS = [
-  { icon: FileText, label: 'Ver catálogo de cursos', href: '/cursos' },
-  { icon: Users, label: 'Capacitación empresarial', href: '/empresas' },
-  { icon: Calendar, label: 'Plataforma LUMEN', href: '/lumen' },
-];
-
 export default function ContactoPage() {
-  const [loading, setLoading] = useState(false);
-  const [sent, setSent] = useState(false);
-  const [queryType, setQueryType] = useState('');
+  const router = useRouter();
+  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [formData, setFormData] = useState({
+    nombre: '',
+    email: '',
+    telefono: '',
+    empresa: '',
+    mensaje: ''
+  });
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    await new Promise((r) => setTimeout(r, 1100));
-    setLoading(false);
-    setSent(true);
+    setFormSubmitted(true);
   };
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }));
+  };
+
+  const contactMethods = [
+    {
+      icon: Phone,
+      title: 'Teléfono',
+      value: '+56 9 5522 2430',
+      subtitle: 'Horario hábil',
+      description: 'Llamada directa con nuestro equipo'
+    },
+    {
+      icon: Mail,
+      title: 'Email',
+      value: 'contacto@elpoderdecrear.cl',
+      subtitle: 'Respuesta en 24 hrs hábiles',
+      description: 'Envíanos tu consulta por correo'
+    },
+    {
+      icon: MapPin,
+      title: 'Dirección',
+      value: 'Rengo 351 DP 901 Despacho 01',
+      subtitle: 'Edificio Asturias, Los Ángeles',
+      description: 'Cobertura nacional en todo Chile'
+    },
+    {
+      icon: Clock,
+      title: 'Horario de Atención',
+      value: 'Lunes a Viernes',
+      subtitle: '9:00 a 13:00 hrs',
+      description: 'Atención presencial y remota'
+    }
+  ];
+
+  const officeHours = [
+    { day: 'Lunes - Viernes', hours: '9:00 - 13:00 hrs' },
+    { day: 'Sábados y Domingos', hours: 'Cerrado' }
+  ];
+
   return (
-    <div className="flex flex-col min-h-screen">
-      {/* HERO */}
+    <div className="min-h-screen bg-white">
+
+      {/* Hero */}
       <section
-        className="relative overflow-hidden py-24"
-        style={{ background: `linear-gradient(135deg, ${C.accent} 0%, ${C.primary} 65%, #3B2BAA 100%)` }}
+        className="pt-32 pb-20"
+        style={{
+          background: 'linear-gradient(135deg, #FF8C42 0%, #6B5CE7 100%)'
+        }}
       >
-        <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse at 70% 30%, rgba(255,255,255,0.08) 0%, transparent 55%)' }} />
-        <div className="container mx-auto px-4 lg:px-8 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="max-w-2xl"
-          >
-            <span
-              className="inline-block text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full mb-6"
-              style={{ background: 'rgba(255,255,255,0.15)', color: '#fff', border: '1px solid rgba(255,255,255,0.3)' }}
+        <div className="container mx-auto px-4 lg:px-8">
+          <div className="max-w-4xl mx-auto text-center">
+            <Badge
+              className="mb-6"
+              style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                color: 'white',
+                border: '1px solid rgba(255, 255, 255, 0.3)'
+              }}
             >
-              Contáctanos
-            </span>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-              Hablemos sobre{' '}
-              <span className="underline decoration-white/40">tu proyecto</span>
+              Contacto
+            </Badge>
+
+            <h1 className="text-5xl lg:text-6xl font-bold mb-6" style={{ color: 'white' }}>
+              Hablemos sobre tu proyecto
             </h1>
-            <p className="text-lg text-white/85 leading-relaxed">
-              Ya sea para tu empresa o para tu desarrollo personal, estamos listos para orientarte.
-              Respondemos en menos de 24 horas hábiles.
+
+            <p className="text-xl" style={{ color: 'rgba(255, 255, 255, 0.9)' }}>
+              Nuestro equipo está listo para ayudarte a encontrar la mejor solución de capacitación para tu empresa
             </p>
-          </motion.div>
+          </div>
         </div>
       </section>
 
-      {/* MÉTODOS DE CONTACTO */}
-      <section className="py-16" style={{ background: C.bgLight }}>
+      {/* Métodos de contacto */}
+      <section className="py-20" style={{ backgroundColor: CorporateColors.bgLight }}>
         <div className="container mx-auto px-4 lg:px-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-14">
-            {CONTACT_METHODS.map((item, i) => (
-              <motion.div
-                key={item.label}
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
-                className="p-5 rounded-2xl border bg-white flex items-start gap-4"
-                style={{ borderColor: C.border }}
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+            {contactMethods.map((method, index) => (
+              <Card
+                key={index}
+                className="p-6 text-center hover:scale-105 transition-transform"
+                style={{
+                  backgroundColor: 'white',
+                  border: 'none',
+                  boxShadow: CorporateShadow.lg
+                }}
               >
-                <div className="h-11 w-11 rounded-xl flex items-center justify-center shrink-0" style={{ background: item.bg }}>
-                  <item.icon className="h-5 w-5" style={{ color: item.color }} />
+                <div
+                  className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4"
+                  style={{ backgroundColor: CorporateColors.primaryLight }}
+                >
+                  <method.icon className="w-7 h-7" style={{ color: CorporateColors.primary }} />
                 </div>
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-wider mb-1" style={{ color: C.textSecondary }}>
-                    {item.label}
-                  </p>
-                  {item.href ? (
-                    <a
-                      href={item.href}
-                      target={item.href.startsWith('http') ? '_blank' : undefined}
-                      rel="noopener noreferrer"
-                      className="text-sm font-semibold transition-colors hover:underline"
-                      style={{ color: item.color }}
-                    >
-                      {item.value}
-                    </a>
-                  ) : (
-                    <p className="text-sm font-semibold" style={{ color: C.textPrimary }}>{item.value}</p>
-                  )}
-                  <p className="text-xs mt-0.5" style={{ color: C.textSecondary }}>{item.sub}</p>
-                </div>
-              </motion.div>
+                <h3 className="font-semibold mb-2" style={{ color: CorporateColors.textPrimary }}>
+                  {method.title}
+                </h3>
+                <p className="text-sm font-semibold mb-1 break-words" style={{ color: CorporateColors.accent }}>
+                  {method.value}
+                </p>
+                <p className="text-xs mb-3" style={{ color: CorporateColors.textSecondary }}>
+                  {method.subtitle}
+                </p>
+                <p className="text-xs" style={{ color: CorporateColors.textMuted }}>
+                  {method.description}
+                </p>
+              </Card>
             ))}
           </div>
+        </div>
+      </section>
 
-          {/* FORMULARIO + SIDEBAR */}
-          <div className="grid lg:grid-cols-5 gap-8">
-            {/* FORMULARIO */}
-            <div className="lg:col-span-3">
-              {sent ? (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="p-10 rounded-2xl border text-center bg-white"
-                  style={{ borderColor: C.border }}
-                >
-                  <CheckCircle className="h-16 w-16 mx-auto mb-5" style={{ color: '#059669' }} />
-                  <h3 className="text-2xl font-bold mb-2" style={{ color: C.textPrimary }}>¡Mensaje enviado!</h3>
-                  <p className="mb-6 text-lg" style={{ color: C.textSecondary }}>
-                    Te contactaremos en menos de 24 horas hábiles. Mientras tanto, puedes llamarnos al{' '}
-                    <a href="tel:+56955222430" className="font-semibold" style={{ color: C.primary }}>
-                      +56 9 5522 2430
-                    </a>
-                  </p>
-                  <Button
-                    onClick={() => { setSent(false); setQueryType(''); }}
-                    style={{ background: C.primary, color: '#fff' }}
+      {/* Formulario y horarios */}
+      <section className="py-20" style={{ backgroundColor: 'white' }}>
+        <div className="container mx-auto px-4 lg:px-8">
+          <div className="grid lg:grid-cols-3 gap-12">
+            {/* Formulario */}
+            <div className="lg:col-span-2">
+              <div className="mb-8">
+                <h2 className="text-4xl font-bold mb-4" style={{ color: CorporateColors.textPrimary }}>
+                  Envíanos tu consulta
+                </h2>
+                <p className="text-lg" style={{ color: CorporateColors.textSecondary }}>
+                  Completa el formulario y un ejecutivo se contactará contigo en menos de 24 horas
+                </p>
+              </div>
+
+              <form className="space-y-6" onSubmit={handleSubmit}>
+                {/* Nombre y Apellido */}
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-semibold mb-2" style={{ color: CorporateColors.textPrimary }}>
+                      Nombre *
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full px-4 py-3 rounded-lg"
+                      style={{
+                        border: `2px solid ${CorporateColors.border}`,
+                        backgroundColor: CorporateColors.bgLight
+                      }}
+                      placeholder="Juan"
+                      name="nombre"
+                      value={formData.nombre}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold mb-2" style={{ color: CorporateColors.textPrimary }}>
+                      Apellido *
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full px-4 py-3 rounded-lg"
+                      style={{
+                        border: `2px solid ${CorporateColors.border}`,
+                        backgroundColor: CorporateColors.bgLight
+                      }}
+                      placeholder="Pérez"
+                      required
+                    />
+                  </div>
+                </div>
+
+                {/* Email y Teléfono */}
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-semibold mb-2" style={{ color: CorporateColors.textPrimary }}>
+                      Email corporativo *
+                    </label>
+                    <input
+                      type="email"
+                      className="w-full px-4 py-3 rounded-lg"
+                      style={{
+                        border: `2px solid ${CorporateColors.border}`,
+                        backgroundColor: CorporateColors.bgLight
+                      }}
+                      placeholder="juan@empresa.cl"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold mb-2" style={{ color: CorporateColors.textPrimary }}>
+                      Teléfono *
+                    </label>
+                    <input
+                      type="tel"
+                      className="w-full px-4 py-3 rounded-lg"
+                      style={{
+                        border: `2px solid ${CorporateColors.border}`,
+                        backgroundColor: CorporateColors.bgLight
+                      }}
+                      placeholder="+56 9 1234 5678"
+                      name="telefono"
+                      value={formData.telefono}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                </div>
+
+                {/* Empresa y Cargo */}
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-semibold mb-2" style={{ color: CorporateColors.textPrimary }}>
+                      Empresa *
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full px-4 py-3 rounded-lg"
+                      style={{
+                        border: `2px solid ${CorporateColors.border}`,
+                        backgroundColor: CorporateColors.bgLight
+                      }}
+                      placeholder="Nombre de la empresa"
+                      name="empresa"
+                      value={formData.empresa}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold mb-2" style={{ color: CorporateColors.textPrimary }}>
+                      Cargo
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full px-4 py-3 rounded-lg"
+                      style={{
+                        border: `2px solid ${CorporateColors.border}`,
+                        backgroundColor: CorporateColors.bgLight
+                      }}
+                      placeholder="Gerente de RRHH"
+                    />
+                  </div>
+                </div>
+
+                {/* Tipo de consulta */}
+                <div>
+                  <label className="block text-sm font-semibold mb-2" style={{ color: CorporateColors.textPrimary }}>
+                    ¿Qué te interesa? *
+                  </label>
+                  <select
+                    className="w-full px-4 py-3 rounded-lg"
+                    style={{
+                      border: `2px solid ${CorporateColors.border}`,
+                      backgroundColor: CorporateColors.bgLight
+                    }}
+                    required
                   >
-                    Enviar otra consulta
+                    <option value="">Selecciona una opción</option>
+                    <option value="demo">Agendar Demo Campus Virtual</option>
+                    <option value="empresa">Capacitación para mi Empresa</option>
+                    <option value="cursos">Información sobre Cursos</option>
+                    <option value="sence">Acompañamiento SENCE</option>
+                    <option value="otro">Otro</option>
+                  </select>
+                </div>
+
+                {/* Número de colaboradores */}
+                <div>
+                  <label className="block text-sm font-semibold mb-2" style={{ color: CorporateColors.textPrimary }}>
+                    Número de colaboradores a capacitar
+                  </label>
+                  <select
+                    className="w-full px-4 py-3 rounded-lg"
+                    style={{
+                      border: `2px solid ${CorporateColors.border}`,
+                      backgroundColor: CorporateColors.bgLight
+                    }}
+                  >
+                    <option value="">Selecciona un rango</option>
+                    <option value="1-10">1 - 10</option>
+                    <option value="11-50">11 - 50</option>
+                    <option value="51-100">51 - 100</option>
+                    <option value="101-500">101 - 500</option>
+                    <option value="500+">Más de 500</option>
+                  </select>
+                </div>
+
+                {/* Mensaje */}
+                <div>
+                  <label className="block text-sm font-semibold mb-2" style={{ color: CorporateColors.textPrimary }}>
+                    Mensaje *
+                  </label>
+                  <textarea
+                    className="w-full px-4 py-3 rounded-lg h-32 resize-none"
+                    style={{
+                      border: `2px solid ${CorporateColors.border}`,
+                      backgroundColor: CorporateColors.bgLight
+                    }}
+                    placeholder="Cuéntanos sobre tus necesidades de capacitación..."
+                    name="mensaje"
+                    value={formData.mensaje}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+
+                {/* Botón */}
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <Button
+                    type="submit"
+                    size="lg"
+                    className="px-8"
+                    style={{
+                      backgroundColor: CorporateColors.accent,
+                      color: 'white'
+                    }}
+                  >
+                    <Send className="w-5 h-5 mr-2" />
+                    Enviar Consulta
                   </Button>
-                </motion.div>
-              ) : (
-                <div className="p-8 rounded-2xl border bg-white" style={{ borderColor: C.border }}>
-                  <h2 className="text-xl font-bold mb-1" style={{ color: C.textPrimary }}>Envíanos un mensaje</h2>
-                  <p className="text-sm mb-6" style={{ color: C.textSecondary }}>
-                    Completa el formulario y te responderemos a la brevedad
-                  </p>
-                  <form onSubmit={handleSubmit} className="space-y-5">
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div className="space-y-1.5">
-                        <Label htmlFor="nombre" className="text-xs font-semibold uppercase tracking-wider" style={{ color: C.textSecondary }}>
-                          Nombre completo *
-                        </Label>
-                        <Input id="nombre" required placeholder="María González" />
-                      </div>
-                      <div className="space-y-1.5">
-                        <Label htmlFor="email" className="text-xs font-semibold uppercase tracking-wider" style={{ color: C.textSecondary }}>
-                          Correo electrónico *
-                        </Label>
-                        <Input id="email" type="email" required placeholder="maria@empresa.cl" />
-                      </div>
-                    </div>
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div className="space-y-1.5">
-                        <Label htmlFor="telefono" className="text-xs font-semibold uppercase tracking-wider" style={{ color: C.textSecondary }}>
-                          Teléfono
-                        </Label>
-                        <Input id="telefono" type="tel" placeholder="+56 9 xxxx xxxx" />
-                      </div>
-                      <div className="space-y-1.5">
-                        <Label htmlFor="empresa" className="text-xs font-semibold uppercase tracking-wider" style={{ color: C.textSecondary }}>
-                          Empresa (opcional)
-                        </Label>
-                        <Input id="empresa" placeholder="Nombre de tu empresa" />
-                      </div>
-                    </div>
+                  <Button
+                    type="button"
+                    size="lg"
+                    variant="outline"
+                    className="px-8"
+                    style={{
+                      borderColor: CorporateColors.primary,
+                      color: CorporateColors.primary
+                    }}
+                    onClick={() => router.push('/agendar')}
+                  >
+                    <Calendar className="w-5 h-5 mr-2" />
+                    Agendar Reunión
+                  </Button>
+                </div>
 
-                    <div className="space-y-1.5">
-                      <Label htmlFor="tipo-consulta" className="text-xs font-semibold uppercase tracking-wider" style={{ color: C.textSecondary }}>
-                        Tipo de consulta
-                      </Label>
-                      <select
-                        id="tipo-consulta"
-                        className="w-full border rounded-md px-3 py-2 text-sm"
-                        style={{ borderColor: C.border, color: C.textPrimary }}
-                        value={queryType}
-                        onChange={(e) => setQueryType(e.target.value)}
-                      >
-                        <option value="">Selecciona una opción</option>
-                        {QUERY_TYPES.map((q) => (
-                          <option key={q} value={q}>{q}</option>
-                        ))}
-                      </select>
-                    </div>
+                <p className="text-sm" style={{ color: CorporateColors.textMuted }}>
+                  * Campos obligatorios
+                </p>
+              </form>
 
-                    <div className="space-y-1.5">
-                      <Label htmlFor="colaboradores" className="text-xs font-semibold uppercase tracking-wider" style={{ color: C.textSecondary }}>
-                        N° de colaboradores
-                      </Label>
-                      <select
-                        id="colaboradores"
-                        className="w-full border rounded-md px-3 py-2 text-sm"
-                        style={{ borderColor: C.border, color: C.textPrimary }}
-                      >
-                        <option value="">Selecciona una opción</option>
-                        {COLLABORATOR_OPTIONS.map((o) => (
-                          <option key={o} value={o}>{o}</option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <Label htmlFor="mensaje" className="text-xs font-semibold uppercase tracking-wider" style={{ color: C.textSecondary }}>
-                        Mensaje *
-                      </Label>
-                      <Textarea
-                        id="mensaje"
-                        rows={5}
-                        required
-                        placeholder="Cuéntanos en qué podemos ayudarte..."
-                        className="resize-none"
-                      />
-                    </div>
-
-                    <Button
-                      type="submit"
-                      disabled={loading}
-                      size="lg"
-                      className="w-full font-semibold text-white group"
-                      style={{ background: loading ? C.textSecondary : C.accent }}
-                    >
-                      {loading ? 'Enviando...' : (
-                        <>
-                          Enviar mensaje
-                          <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                        </>
-                      )}
-                    </Button>
-                  </form>
+              {formSubmitted && (
+                <div className="mt-6 p-4 bg-green-100 text-green-800 rounded-lg flex items-center">
+                  <CheckCircle className="w-5 h-5 mr-2" />
+                  Tu consulta ha sido enviada exitosamente. Te contactaremos pronto.
                 </div>
               )}
             </div>
 
-            {/* SIDEBAR */}
-            <div className="lg:col-span-2 flex flex-col gap-5">
+            {/* Sidebar */}
+            <div className="space-y-6">
               {/* Horarios */}
-              <div className="p-5 rounded-2xl border bg-white" style={{ borderColor: C.border }}>
-                <h3 className="font-bold mb-3" style={{ color: C.textPrimary }}>Horarios de atención</h3>
-                <div className="space-y-2">
-                  {[
-                    { dia: 'Lunes a Viernes', hora: '9:00 – 18:00' },
-                    { dia: 'Sábados', hora: '9:00 – 13:00' },
-                    { dia: 'Domingos y feriados', hora: 'Cerrado' },
-                  ].map((h) => (
-                    <div key={h.dia} className="flex justify-between text-sm">
-                      <span style={{ color: C.textSecondary }}>{h.dia}</span>
-                      <span className="font-semibold" style={{ color: C.textPrimary }}>{h.hora}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* CTA agendar */}
-              <div
-                className="p-5 rounded-2xl text-white"
-                style={{ background: `linear-gradient(135deg, ${C.accent}, ${C.primary})` }}
+              <Card
+                className="p-6"
+                style={{
+                  backgroundColor: CorporateColors.bgLight,
+                  border: 'none'
+                }}
               >
-                <h3 className="font-bold mb-2">¿Prefieres hablar directamente?</h3>
-                <p className="text-sm text-white/80 mb-4">
-                  Llámanos y te atendemos de inmediato.
-                </p>
-                <a
-                  href="tel:+56955222430"
-                  className="flex items-center gap-2 text-sm font-bold"
-                >
-                  <Phone className="h-4 w-4" />
-                  +56 9 5522 2430
-                </a>
-              </div>
-
-              {/* Tiempos de respuesta */}
-              <div className="p-5 rounded-2xl border bg-white" style={{ borderColor: C.border }}>
-                <h3 className="font-bold mb-3" style={{ color: C.textPrimary }}>Tiempos de respuesta</h3>
-                <div className="space-y-2">
-                  {[
-                    { label: 'Consultas generales', time: '< 24 horas' },
-                    { label: 'Cotizaciones B2B', time: '< 4 horas hábiles' },
-                    { label: 'Soporte LUMEN', time: 'Inmediato (chat)' },
-                  ].map((item) => (
-                    <div key={item.label} className="flex items-center justify-between text-sm">
-                      <span style={{ color: C.textSecondary }}>{item.label}</span>
-                      <span
-                        className="text-xs font-semibold px-2 py-0.5 rounded-full"
-                        style={{ background: C.primaryLight, color: C.primary }}
-                      >
-                        {item.time}
+                <div className="flex items-center gap-3 mb-6">
+                  <div
+                    className="w-12 h-12 rounded-lg flex items-center justify-center"
+                    style={{ backgroundColor: CorporateColors.primary }}
+                  >
+                    <Clock className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="text-xl font-semibold" style={{ color: CorporateColors.textPrimary }}>
+                    Horarios de Atención
+                  </h3>
+                </div>
+                <div className="space-y-3">
+                  {officeHours.map((schedule, index) => (
+                    <div
+                      key={index}
+                      className="flex justify-between items-center py-2"
+                      style={{
+                        borderBottom: index < officeHours.length - 1 ? `1px solid ${CorporateColors.border}` : 'none'
+                      }}
+                    >
+                      <span className="font-medium" style={{ color: CorporateColors.textPrimary }}>
+                        {schedule.day}
+                      </span>
+                      <span style={{ color: CorporateColors.textSecondary }}>
+                        {schedule.hours}
                       </span>
                     </div>
                   ))}
                 </div>
-              </div>
+              </Card>
 
-              {/* Links útiles */}
-              <div className="p-5 rounded-2xl border bg-white" style={{ borderColor: C.border }}>
-                <h3 className="font-bold mb-3" style={{ color: C.textPrimary }}>Links útiles</h3>
-                <div className="space-y-2">
-                  {USEFUL_LINKS.map((link) => (
-                    <a
-                      key={link.label}
-                      href={link.href}
-                      className="flex items-center gap-3 text-sm py-2 px-3 rounded-lg transition-colors hover:bg-gray-50"
-                      style={{ color: C.textPrimary }}
+              {/* CTA Rápido */}
+              <Card
+                className="p-6"
+                style={{
+                  backgroundColor: CorporateColors.primary,
+                  border: 'none'
+                }}
+              >
+                <h3 className="text-xl font-semibold mb-3" style={{ color: 'white' }}>
+                  ¿Necesitas respuesta inmediata?
+                </h3>
+                <p className="mb-6" style={{ color: 'rgba(255, 255, 255, 0.9)' }}>
+                  Agenda una llamada con nuestro equipo comercial
+                </p>
+                <Button
+                  className="w-full"
+                  onClick={() => router.push('/agendar')}
+                  style={{
+                    backgroundColor: CorporateColors.accent,
+                    color: 'white'
+                  }}
+                >
+                  <Calendar className="w-5 h-5 mr-2" />
+                  Agendar Llamada
+                </Button>
+              </Card>
+
+              {/* Información adicional */}
+              <Card
+                className="p-6"
+                style={{
+                  backgroundColor: 'white',
+                  border: `1px solid ${CorporateColors.border}`
+                }}
+              >
+                <h3 className="text-lg font-semibold mb-4" style={{ color: CorporateColors.textPrimary }}>
+                  También puedes
+                </h3>
+                <ul className="space-y-3">
+                  <li>
+                    <button
+                      onClick={() => router.push('/cursos')}
+                      className="flex items-center gap-2 text-sm hover:opacity-70 transition-opacity"
+                      style={{ color: CorporateColors.secondary }}
                     >
-                      <link.icon className="h-4 w-4 shrink-0" style={{ color: C.primary }} />
-                      {link.label}
-                      <ArrowRight className="h-3.5 w-3.5 ml-auto" style={{ color: C.textSecondary }} />
-                    </a>
-                  ))}
-                </div>
-              </div>
+                      → Ver catálogo de cursos
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      onClick={() => router.push('/modalidades')}
+                      className="flex items-center gap-2 text-sm hover:opacity-70 transition-opacity"
+                      style={{ color: CorporateColors.secondary }}
+                    >
+                      → Conocer Modalidades
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      onClick={() => router.push('/sence')}
+                      className="flex items-center gap-2 text-sm hover:opacity-70 transition-opacity"
+                      style={{ color: CorporateColors.secondary }}
+                    >
+                      → Información SENCE
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      onClick={() => router.push('/casos')}
+                      className="flex items-center gap-2 text-sm hover:opacity-70 transition-opacity"
+                      style={{ color: CorporateColors.secondary }}
+                    >
+                      → Ver casos de éxito
+                    </button>
+                  </li>
+                </ul>
+              </Card>
             </div>
           </div>
         </div>
       </section>
 
-      {/* MAPA + COBERTURA */}
-      <section className="py-20 bg-white">
+      {/* Ubicación con Mapa */}
+      <section className="py-20" style={{ backgroundColor: CorporateColors.bgLight }}>
         <div className="container mx-auto px-4 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-3" style={{ color: C.textPrimary }}>
-              Dónde estamos
+            <h2 className="text-4xl font-bold mb-4" style={{ color: CorporateColors.textPrimary }}>
+              Nuestra Ubicación
             </h2>
-            <p className="text-lg" style={{ color: C.textSecondary }}>
-              Oficina central en Los Ángeles, Biobío — con cobertura nacional
+            <p className="text-xl mb-2" style={{ color: CorporateColors.textSecondary }}>
+              Edificio Asturias, Los Ángeles
+            </p>
+            <p style={{ color: CorporateColors.textSecondary }}>
+              Rengo 351 DP 901 Despacho 01, Los Ángeles, Región del Biobío
             </p>
           </div>
-          <div className="grid lg:grid-cols-3 gap-6 items-start">
-            <div className="lg:col-span-2 rounded-2xl overflow-hidden border" style={{ borderColor: C.border, height: '380px' }}>
-              <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3275.5374!2d-72.3541!3d-37.4694!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzfCsDI4JzA5LjkiUyA3MsKwMjEnMTUuNCJX!5e0!3m2!1ses!2scl!4v1"
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-              />
-            </div>
-            <div className="flex flex-col gap-4">
-              <div className="p-5 rounded-2xl border bg-white" style={{ borderColor: C.border }}>
-                <h3 className="font-bold mb-2" style={{ color: C.textPrimary }}>Oficina Central</h3>
-                <p className="text-sm leading-relaxed" style={{ color: C.textSecondary }}>
-                  Rengo 351, Departamento 901<br />
-                  Los Ángeles, Región del Biobío<br />
-                  Chile
-                </p>
-                <a
-                  href="https://www.google.com/maps/search/Rengo+351+Los+Angeles+Chile"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 mt-3 text-sm font-semibold"
-                  style={{ color: C.primary }}
+
+          {/* Google Maps Embed */}
+          <div className="mb-12 rounded-xl overflow-hidden shadow-2xl">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3176.1!2d-72.3516!3d-37.4695!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9669b58c3c3c3c3c%3A0x3c3c3c3c3c3c3c3c!2sRengo%20351%2C%20Los%20%C3%81ngeles%2C%20Biob%C3%ADo!5e0!3m2!1ses!2scl!4v1234567890"
+              width="100%"
+              height="450"
+              style={{ border: 0 }}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            />
+          </div>
+
+          <div className="text-center mb-12">
+            <Button
+              size="lg"
+              onClick={() => window.open('https://www.google.com/maps/dir/?api=1&destination=Rengo+351,+Los+Angeles,+Chile', '_blank')}
+              style={{
+                backgroundColor: CorporateColors.accent,
+                color: 'white'
+              }}
+            >
+              <MapPin className="w-5 h-5 mr-2" />
+              Cómo Llegar
+            </Button>
+          </div>
+
+          <div className="text-center mb-12">
+            <h3 className="text-2xl font-bold mb-4" style={{ color: CorporateColors.textPrimary }}>
+              Cobertura Nacional
+            </h3>
+            <p className="text-lg" style={{ color: CorporateColors.textSecondary }}>
+              Atendemos empresas en todas las regiones de Chile
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {[
+              { zone: 'Zona Norte', regions: 'Arica a Coquimbo' },
+              { zone: 'Zona Centro', regions: 'Valparaíso a Maule' },
+              { zone: 'Zona Sur', regions: 'Ñuble a Magallanes' }
+            ].map((zone, index) => (
+              <Card
+                key={index}
+                className="p-6 text-center"
+                style={{
+                  backgroundColor: 'white',
+                  border: 'none',
+                  boxShadow: CorporateShadow.md
+                }}
+              >
+                <div
+                  className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4"
+                  style={{ backgroundColor: CorporateColors.accentLight }}
                 >
-                  Ver en Google Maps <ArrowRight className="h-3.5 w-3.5" />
-                </a>
-              </div>
-              <div className="p-5 rounded-2xl border" style={{ background: C.primaryLight, borderColor: `${C.primary}33` }}>
-                <h3 className="font-bold mb-2" style={{ color: C.primary }}>Cobertura Nacional</h3>
-                <p className="text-sm leading-relaxed" style={{ color: C.textSecondary }}>
-                  Atendemos empresas y estudiantes en todas las regiones de Chile con modalidades presenciales, online e in-company.
+                  <MapPin className="w-6 h-6" style={{ color: CorporateColors.accent }} />
+                </div>
+                <h3 className="text-xl font-semibold mb-2" style={{ color: CorporateColors.textPrimary }}>
+                  {zone.zone}
+                </h3>
+                <p style={{ color: CorporateColors.textSecondary }}>
+                  {zone.regions}
                 </p>
-              </div>
-            </div>
+              </Card>
+            ))}
           </div>
         </div>
       </section>
+
     </div>
   );
 }
