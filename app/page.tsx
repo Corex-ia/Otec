@@ -962,18 +962,15 @@ export default function NewHomePageDynamic() {
                 </motion.div>
               </div>
 
-              {/* Cards Flotantes — patrón dado: logo al centro, cards en las 4 esquinas */}
-              <div
-                className="relative hidden lg:block"
-                style={{ height: "460px", width: "100%", maxWidth: "560px", margin: "0 auto" }}
-              >
+              {/* Cards Flotantes — patrón dado: logo al centro, 4 cards en esquinas */}
+              <div className="relative hidden lg:block" style={{ height: "460px" }}>
+
                 {/* CENTRO: Logo OTEC */}
-                <motion.div
-                  className="absolute p-4 rounded-2xl shadow-2xl"
+                <motion.div className="absolute p-4 rounded-2xl shadow-2xl"
                   style={{
                     backgroundColor: "white",
                     border: `2px solid ${CorporateColors.borderLight}`,
-                    width: "180px", height: "180px",
+                    width: "170px", height: "170px",
                     top: "50%", left: "50%",
                     transform: "translate(-50%, -50%)",
                     zIndex: 10,
@@ -987,12 +984,12 @@ export default function NewHomePageDynamic() {
                   </div>
                 </motion.div>
 
-                {/* ESQUINA: arriba-izquierda — 95% Satisfacción (naranja) */}
+                {/* ESQUINA arriba-izquierda — 95% Satisfacción (naranja) */}
                 <motion.div className="absolute p-4 rounded-2xl shadow-xl"
                   style={{
                     background: "rgba(255, 107, 53, 0.15)", backdropFilter: "blur(10px)",
-                    border: "1px solid rgba(255, 107, 53, 0.3)", width: "152px",
-                    top: "16px", left: "0", zIndex: 5,
+                    border: "1px solid rgba(255, 107, 53, 0.3)", width: "148px",
+                    top: "0", left: "0", zIndex: 5,
                   }}
                   animate={{ y: [0, -6, 0] }}
                   transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0 }}
@@ -1005,15 +1002,15 @@ export default function NewHomePageDynamic() {
                   <div className="text-xs text-white/70 text-center leading-tight">Relatores especializados</div>
                 </motion.div>
 
-                {/* ESQUINA: arriba-derecha — Soporte Continuo (púrpura) */}
+                {/* ESQUINA arriba-derecha — Soporte Continuo (púrpura) */}
                 <motion.div className="absolute p-4 rounded-2xl shadow-xl"
                   style={{
                     background: "rgba(107, 92, 231, 0.15)", backdropFilter: "blur(10px)",
-                    border: "1px solid rgba(107, 92, 231, 0.3)", width: "152px",
-                    top: "16px", right: "0", zIndex: 5,
+                    border: "1px solid rgba(107, 92, 231, 0.3)", width: "148px",
+                    top: "0", right: "0", zIndex: 5,
                   }}
                   animate={{ y: [0, -6, 0] }}
-                  transition={{ duration: 3.6, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+                  transition={{ duration: 3.6, repeat: Infinity, ease: "easeInOut", delay: 0.6 }}
                 >
                   <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-2 mx-auto" style={{ backgroundColor: "rgba(107, 92, 231, 0.3)" }}>
                     <Users className="w-5 h-5" style={{ color: "#6B5CE7" }} />
@@ -1022,12 +1019,12 @@ export default function NewHomePageDynamic() {
                   <div className="text-xs text-white/80 text-center leading-tight">Acompañamiento permanente</div>
                 </motion.div>
 
-                {/* ESQUINA: abajo-izquierda — Metodologías (cyan) */}
+                {/* ESQUINA abajo-izquierda — Metodologías (cyan) */}
                 <motion.div className="absolute p-4 rounded-2xl shadow-xl"
                   style={{
                     background: "rgba(0, 217, 255, 0.15)", backdropFilter: "blur(10px)",
-                    border: "1px solid rgba(0, 217, 255, 0.3)", width: "152px",
-                    bottom: "16px", left: "0", zIndex: 5,
+                    border: "1px solid rgba(0, 217, 255, 0.3)", width: "148px",
+                    bottom: "0", left: "0", zIndex: 5,
                   }}
                   animate={{ y: [0, 6, 0] }}
                   transition={{ duration: 3.8, repeat: Infinity, ease: "easeInOut", delay: 1 }}
@@ -1039,12 +1036,12 @@ export default function NewHomePageDynamic() {
                   <div className="text-xs text-white/80 text-center leading-tight">Enfoque práctico</div>
                 </motion.div>
 
-                {/* ESQUINA: abajo-derecha — Experiencia multisectorial (rosa) */}
+                {/* ESQUINA abajo-derecha — Experiencia multisectorial (rosa) */}
                 <motion.div className="absolute p-4 rounded-2xl shadow-xl"
                   style={{
                     background: "rgba(230, 62, 150, 0.15)", backdropFilter: "blur(10px)",
-                    border: "1px solid rgba(230, 62, 150, 0.3)", width: "152px",
-                    bottom: "16px", right: "0", zIndex: 5,
+                    border: "1px solid rgba(230, 62, 150, 0.3)", width: "148px",
+                    bottom: "0", right: "0", zIndex: 5,
                   }}
                   animate={{ y: [0, 6, 0] }}
                   transition={{ duration: 3.3, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
