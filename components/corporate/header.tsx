@@ -20,6 +20,7 @@ import {
 import { useRouter } from 'next/navigation';
 
 const NAV_LINKS = [
+  { name: 'Inicio', href: '/' },
   { name: 'Nosotros', href: '/nosotros' },
   { name: 'Empresas', href: '/empresas' },
   { name: 'ATE', href: '/sence' },
