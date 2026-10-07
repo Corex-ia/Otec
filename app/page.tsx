@@ -1,537 +1,707 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { motion, useScroll, useTransform, useAnimationControls } from 'motion/react';
 import {
-  ChevronRight, Play, CheckCircle, Award, Users, BookOpen,
-  TrendingUp, Shield, Clock, MapPin, Phone, Mail, ArrowRight,
-  BarChart3, FileCheck, Target, Zap, Star, Quote, ChevronLeft,
-  Globe, Building2, GraduationCap, Calendar, MessageSquare, Download,
+  Building2, Users, GraduationCap, Award, CheckCircle,
+  ArrowRight, Sparkles, Target, TrendingUp, BookOpen,
+  Shield, Play, Star, Phone
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-// ── Design tokens (paleta Figma validada por cliente) ─────────────────────────
 const C = {
-  primary:       '#5D3FD3',
-  primaryLight:  '#F0ECFF',
-  primaryDark:   '#4A2FB8',
-  secondary:     '#6B5CE7',
-  accent:        '#FF8C42',
-  accentLight:   '#FFB380',
-  textPrimary:   '#1F2937',
+  primary: '#5D3FD3',
+  primaryLight: '#F0ECFF',
+  secondary: '#6B5CE7',
+  accent: '#FF8C42',
+  textPrimary: '#1F2937',
   textSecondary: '#6B7280',
-  bgLight:       '#F9FAFB',
-  border:        '#E5E7EB',
-  success:       '#059669',
-  successLight:  '#D1FAE5',
-  secondaryLight:'#EDE9FF',
-} as const;
+  bgLight: '#F9FAFB',
+  border: '#E5E7EB',
+};
 
-const S = {
-  md:  '0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -1px rgba(0,0,0,.06)',
-  lg:  '0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -2px rgba(0,0,0,.05)',
-  xl:  '0 20px 25px -5px rgba(0,0,0,.1),0 10px 10px -5px rgba(0,0,0,.04)',
-  '2xl': '0 25px 50px -12px rgba(0,0,0,.25)',
-} as const;
+const fadeInUp = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }
+  }
+};
 
-// ─────────────────────────────────────────────────────────────────────────────
+const staggerChildren = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
+};
 
-const testimonials = [
-  {
-    name: 'María Fernanda González',
-    position: 'Gerente de RRHH',
-    company: 'Grupo Empresarial Nacional',
-    image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Maria',
-    text: 'El Campus Virtual superó nuestras expectativas. La integración con SENCE fue impecable y nuestros colaboradores valoran enormemente la calidad de las capacitaciones.',
-  },
-  {
-    name: 'Roberto Sánchez',
-    position: 'Director de Capacitación',
-    company: 'Corporación Minera del Norte',
-    image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Roberto',
-    text: 'Implementamos el programa de Liderazgo Estratégico en nuestras 5 faenas. Los resultados en productividad y clima laboral han sido extraordinarios.',
-  },
-  {
-    name: 'Carolina Muñoz',
-    position: 'Jefa de Desarrollo Organizacional',
-    company: 'Retail Group Chile',
-    image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Carolina',
-    text: 'La plataforma es intuitiva, el soporte técnico es excepcional y la trazabilidad SENCE nos da total tranquilidad. Altamente recomendados.',
-  },
+const scaleOnHover = {
+  rest: { scale: 1 },
+  hover: { scale: 1.02, transition: { duration: 0.3, ease: 'easeOut' } }
+};
+
+// ─── TrustedCompanies ────────────────────────────────────────────────────────
+const COMPANIES = [
+  'Ministerio de Bienes Nacionales',
+  'Ministerio de Agricultura',
+  'Programa Quiero mi Barrio',
+  'Subsecretaría de Transportes',
+  'DGAC Chile',
+  'Senado de Chile',
+  'SERNAMEG',
+  'Municipalidad de Santa Bárbara',
+  'Municipalidad de Navidad',
+  'Programa Familias',
+  'Chile Aduanas',
+  'DIPRECA',
+  'Corp. Municipal Punta Arenas',
+  'SEREMI Reg. Metropolitana',
+  'Subsecretaría FFAA',
 ];
 
-const featuredCourses = [
-  { title: 'Liderazgo Estratégico',       category: 'Liderazgo',  duration: '40 horas', level: 'Avanzado',   students: 1250, rating: 4.9, sence: true },
-  { title: 'Excel Avanzado para Negocios', category: 'Ofimática', duration: '32 horas', level: 'Intermedio', students: 2100, rating: 4.8, sence: true },
-  { title: 'Marketing Digital Estratégico',category: 'Marketing', duration: '48 horas', level: 'Intermedio', students: 1680, rating: 4.9, sence: true },
-  { title: 'Gestión de Proyectos Ágiles',  category: 'Gestión',   duration: '36 horas', level: 'Intermedio', students: 1420, rating: 4.7, sence: true },
-];
+function TrustedCompanies() {
+  const [isPaused, setIsPaused] = useState(false);
+  const controls = useAnimationControls();
+  const duplicated = [...COMPANIES, ...COMPANIES, ...COMPANIES];
 
-const faqs = [
-  {
-    question: '¿Qué es SENCE y cómo funcionan los subsidios?',
-    answer: 'SENCE (Servicio Nacional de Capacitación y Empleo) es el organismo del Estado que promueve la capacitación laboral. Como OTEC certificada, gestionamos todo el proceso de franquicia tributaria, permitiendo que tu empresa recupere hasta el 100% de la inversión en capacitación.',
-  },
-  {
-    question: '¿Los cursos cuentan con certificación oficial?',
-    answer: 'Sí, todos nuestros programas cuentan con certificación OTEC avalada por SENCE. Al finalizar exitosamente, los participantes reciben un certificado digital y físico con validez nacional.',
-  },
-  {
-    question: '¿Qué modalidades de capacitación ofrecen?',
-    answer: 'Ofrecemos tres modalidades: 100% online asincrónica (campus virtual), clases en vivo sincrónicas, y formato híbrido. Nos adaptamos a las necesidades operativas de tu empresa.',
-  },
-  {
-    question: '¿Cómo es el soporte técnico y académico?',
-    answer: 'Contamos con soporte técnico de lunes a viernes de 8:00 a 20:00 hrs y sábados de 9:00 a 14:00 hrs. El soporte académico está disponible a través de tutores dedicados durante todo el programa.',
-  },
-];
-
-export default function HomePage() {
-  const [testimonialIndex, setTestimonialIndex] = useState(0);
-  const [faqOpen, setFaqOpen] = useState<number | null>(null);
-
-  const next = () => setTestimonialIndex((p) => (p + 1) % testimonials.length);
-  const prev = () => setTestimonialIndex((p) => (p - 1 + testimonials.length) % testimonials.length);
+  useEffect(() => {
+    if (!isPaused) {
+      controls.start({
+        x: [0, -(220 * COMPANIES.length)],
+        transition: {
+          x: { repeat: Infinity, repeatType: 'loop', duration: COMPANIES.length * 3.5, ease: 'linear' },
+        },
+      });
+    } else {
+      controls.stop();
+    }
+  }, [isPaused, controls]);
 
   return (
-    <div className="min-h-screen">
+    <motion.section
+      className="py-20 relative overflow-hidden"
+      style={{ backgroundColor: 'white' }}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true }}
+    >
+      <div className="absolute inset-0 opacity-5 pointer-events-none">
+        <div className="absolute top-0 right-0 w-96 h-96 rounded-full blur-3xl" style={{ backgroundColor: C.primary }} />
+        <div className="absolute bottom-0 left-0 w-96 h-96 rounded-full blur-3xl" style={{ backgroundColor: C.accent }} />
+      </div>
 
-      {/* ── Hero ── */}
-      <section id="inicio" className="pt-16 pb-20 relative overflow-hidden" style={{ background: C.primary }}>
-        <div className="absolute inset-0" style={{ pointerEvents: 'none' }}>
-          <div className="absolute rounded-full" style={{ top: -100, right: -100, width: 600, height: 600, background: 'rgba(255,140,66,0.30)', filter: 'blur(100px)' }} />
-          <div className="absolute rounded-full" style={{ bottom: -100, left: -100, width: 500, height: 500, background: 'rgba(107,92,231,0.50)', filter: 'blur(100px)' }} />
-        </div>
+      <div className="container mx-auto px-4 lg:px-8 relative z-10">
+        <motion.div className="text-center mb-12" variants={fadeInUp}>
+          <Badge
+            className="mb-4 text-sm px-4 py-2"
+            style={{ background: `linear-gradient(135deg, ${C.primary} 0%, ${C.secondary} 100%)`, color: 'white', border: 'none' }}
+          >
+            Nuestros Clientes
+          </Badge>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4" style={{ color: C.primary }}>
+            Instituciones que Han Confiado en Nosotros
+          </h2>
+          <p className="text-lg md:text-xl max-w-3xl mx-auto" style={{ color: C.textSecondary }}>
+            Organismos públicos y empresas de diversos sectores han transformado sus equipos
+            con nuestras soluciones de capacitación acreditadas por SENCE
+          </p>
+        </motion.div>
 
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <Badge className="mb-6" style={{ backgroundColor: 'rgba(255,255,255,.2)', color: 'white', border: '1px solid rgba(255,255,255,.3)' }}>
-                <Award className="w-3 h-3 mr-1" />
-                OTEC Certificada SENCE
-              </Badge>
-
-              <h1 className="text-5xl lg:text-6xl font-bold mb-4 leading-tight" style={{ color: 'white' }}>
-                El Poder de{' '}
-                <span style={{ color: C.accent }}>Crear</span>
-              </h1>
-
-              <p className="text-xl mb-3 font-medium" style={{ color: 'rgba(255,255,255,0.95)' }}>
-                Aprendes hoy, lideras mañana
-              </p>
-
-              <p className="text-base mb-8 leading-relaxed" style={{ color: 'rgba(255,255,255,.80)' }}>
-                Somos un Organismo Técnico de Capacitación (OTEC) certificado bajo la Norma Chilena NCh 2728:2015, especializado en el desarrollo de competencias laborales para empresas y personas.
-              </p>
-
-              <div className="flex flex-col sm:flex-row gap-4 mb-12">
-                <Button size="lg" className="text-base px-8 py-6 font-semibold" style={{ backgroundColor: C.accent, color: 'white', boxShadow: S.xl }} asChild>
-                  <Link href="/empresas">
-                    Soluciones para Empresas
-                    <ChevronRight className="w-5 h-5 ml-1" />
-                  </Link>
-                </Button>
-                <Button size="lg" variant="outline" className="text-base px-8 py-6 font-semibold" style={{ borderColor: 'white', color: 'white', backgroundColor: 'transparent', borderWidth: '2px' }} asChild>
-                  <Link href="/cursos">
-                    Cursos Individuales
-                    <ChevronRight className="w-5 h-5 ml-1" />
-                  </Link>
-                </Button>
-              </div>
-
-              <div className="flex flex-wrap gap-8">
-                {[
-                  { value: '+15 años', label: 'Experiencia' },
-                  { value: '+500',     label: 'Empresas' },
-                  { value: '+25.000',  label: 'Alumnos' },
-                  { value: '100%',     label: 'Cobertura Nacional' },
-                ].map((s) => (
-                  <div key={s.label}>
-                    <div className="text-3xl font-bold mb-1" style={{ color: 'white' }}>{s.value}</div>
-                    <div className="text-sm" style={{ color: 'rgba(255,255,255,.8)' }}>{s.label}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="relative">
-              <div className="rounded-2xl p-8 backdrop-blur-xl" style={{ backgroundColor: 'rgba(255,255,255,.1)', border: '1px solid rgba(255,255,255,.2)', boxShadow: S['2xl'] }}>
-                <div className="aspect-video rounded-xl overflow-hidden mb-4 flex items-center justify-center" style={{ backgroundColor: C.secondary }}>
-                  <Play className="w-20 h-20 text-white opacity-80" />
+        <motion.div
+          variants={fadeInUp}
+          className="mt-12 overflow-hidden"
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
+        >
+          <motion.div className="flex gap-6" animate={controls} style={{ width: 'fit-content' }}>
+            {duplicated.map((name, index) => (
+              <motion.div
+                key={`${name}-${index}`}
+                className="flex-shrink-0 group cursor-pointer"
+                style={{ width: '210px' }}
+                whileHover={{ scale: 1.05, transition: { duration: 0.3 } }}
+              >
+                <div
+                  className="relative rounded-xl border-2 flex items-center justify-center p-5 transition-all duration-300"
+                  style={{ borderColor: C.border, backgroundColor: 'white', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)', minHeight: '80px' }}
+                >
+                  <div
+                    className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    style={{ background: `linear-gradient(135deg, ${C.primary}10 0%, ${C.accent}15 100%)` }}
+                  />
+                  <span className="relative z-10 text-xs font-semibold text-center leading-tight" style={{ color: C.textSecondary }}>
+                    {name}
+                  </span>
                 </div>
-                <h3 className="text-xl font-semibold mb-2" style={{ color: 'white' }}>Conoce nuestro Aula Virtual</h3>
-                <p style={{ color: 'rgba(255,255,255,.8)' }}>Plataforma LMS propia con tecnología de última generación</p>
-              </div>
-
-              <div className="absolute -bottom-6 -left-6 p-4 rounded-xl" style={{ backgroundColor: 'white', boxShadow: S.xl }}>
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-lg flex items-center justify-center" style={{ backgroundColor: C.accentLight }}>
-                    <TrendingUp className="w-6 h-6" style={{ color: C.accent }} />
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold" style={{ color: C.textPrimary }}>95%</div>
-                    <div className="text-sm" style={{ color: C.textSecondary }}>Satisfacción</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Soluciones ── */}
-      <section id="soluciones" className="py-20" style={{ backgroundColor: C.bgLight }}>
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <Badge className="mb-4" style={{ backgroundColor: C.primaryLight, color: C.primary, border: 'none' }}>Soluciones Integrales</Badge>
-            <h2 className="text-4xl lg:text-5xl font-bold mb-4" style={{ color: C.textPrimary }}>Todo lo que tu empresa necesita</h2>
-            <p className="text-xl max-w-3xl mx-auto" style={{ color: C.textSecondary }}>Soluciones completas de capacitación profesional con tecnología de vanguardia</p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                icon: <Globe className="w-8 h-8" style={{ color: C.primary }} />,
-                bg: C.primaryLight,
-                title: 'Campus Virtual LMS',
-                desc: 'Plataforma e-learning de última generación con gestión automática SENCE, seguimiento en tiempo real y reportería avanzada.',
-                items: ['Plataforma 100% web responsive', 'Integración automática SENCE', 'Clases en vivo y grabadas', 'Analytics y reportes avanzados'],
-                btnColor: C.primary,
-                btnLabel: 'Ver Demo',
-              },
-              {
-                icon: <Building2 className="w-8 h-8" style={{ color: C.secondary }} />,
-                bg: C.secondaryLight,
-                title: 'Capacitación para Empresas',
-                desc: 'Programas corporativos diseñados a medida con acompañamiento integral y gestión completa de franquicia SENCE.',
-                items: ['Planes corporativos flexibles', 'Gestión 100% franquicia SENCE', 'Acompañamiento personalizado', 'Cobertura nacional'],
-                btnColor: C.secondary,
-                btnLabel: 'Solicitar Acompañamiento',
-              },
-              {
-                icon: <BookOpen className="w-8 h-8" style={{ color: C.accent }} />,
-                bg: C.accentLight,
-                title: 'Catálogo de Cursos',
-                desc: 'Más de 100 programas certificados SENCE en las áreas más demandadas del mercado laboral chileno.',
-                items: ['Liderazgo y Gestión', 'Tecnología y Ofimática', 'Marketing y Ventas', 'Habilidades Transversales'],
-                btnColor: C.accent,
-                btnLabel: 'Ver Catálogo',
-              },
-            ].map((card) => (
-              <Card key={card.title} className="p-8 hover:scale-105 transition-transform cursor-pointer" style={{ backgroundColor: 'white', border: `1px solid ${C.border}`, boxShadow: S.lg }}>
-                <div className="w-16 h-16 rounded-xl flex items-center justify-center mb-6" style={{ backgroundColor: card.bg }}>{card.icon}</div>
-                <h3 className="text-2xl font-semibold mb-4" style={{ color: C.textPrimary }}>{card.title}</h3>
-                <p className="mb-6" style={{ color: C.textSecondary }}>{card.desc}</p>
-                <ul className="space-y-3 mb-6">
-                  {card.items.map((item) => (
-                    <li key={item} className="flex items-start gap-2">
-                      <CheckCircle className="w-5 h-5 mt-0.5 flex-shrink-0" style={{ color: C.success }} />
-                      <span style={{ color: C.textSecondary }}>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-                <Button className="w-full" style={{ backgroundColor: card.btnColor, color: 'white' }}>
-                  {card.btnLabel} <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              </Card>
+              </motion.div>
             ))}
+          </motion.div>
+        </motion.div>
+
+        <motion.div className="mt-8 text-center" variants={fadeInUp}>
+          <div
+            className="inline-block px-8 py-4 rounded-2xl"
+            style={{ background: `linear-gradient(135deg, ${C.primary}08 0%, ${C.accent}08 100%)`, border: `1px solid ${C.border}` }}
+          >
+            <p className="text-sm font-medium mb-1" style={{ color: C.textSecondary }}>OTEC Certificada NCh 2728:2015</p>
+            <p
+              className="text-2xl md:text-3xl font-bold"
+              style={{
+                background: `linear-gradient(135deg, ${C.primary} 0%, ${C.accent} 100%)`,
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text'
+              }}
+            >
+              Múltiples Instituciones Capacitadas
+            </p>
           </div>
-        </div>
-      </section>
+        </motion.div>
+      </div>
+    </motion.section>
+  );
+}
 
-      {/* ── Cómo Funciona ── */}
-      <section className="py-20" style={{ backgroundColor: 'white' }}>
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <Badge className="mb-4" style={{ backgroundColor: C.secondaryLight, color: C.secondary, border: 'none' }}>Proceso Simple</Badge>
-            <h2 className="text-4xl lg:text-5xl font-bold mb-4" style={{ color: C.textPrimary }}>Cómo Funciona</h2>
-            <p className="text-xl max-w-3xl mx-auto" style={{ color: C.textSecondary }}>Implementación ágil con acompañamiento experto en cada etapa</p>
-          </div>
+// ─── OurHistory ──────────────────────────────────────────────────────────────
+function OurHistory() {
+  const stats = [
+    { icon: Award, value: 'Ley 19.518', label: 'Franquicia Tributaria', color: C.primary },
+    { icon: Shield, value: 'NCh 2728', label: 'Certificación vigente', color: C.secondary },
+    { icon: Star, value: '95%', label: 'Satisfacción', color: C.accent },
+    { icon: TrendingUp, value: '100%', label: 'Compromiso con calidad', color: C.primary },
+  ];
 
-          <div className="grid md:grid-cols-4 gap-8">
-            {[
-              { icon: <Target className="w-10 h-10 text-white" />,      bg: C.primary,    step: 'PASO 1', title: 'Diagnóstico',     desc: 'Reunión inicial para entender tus necesidades, evaluar disponibilidad SENCE y diseñar plan a medida' },
-              { icon: <Zap className="w-10 h-10 text-white" />,         bg: C.secondary,  step: 'PASO 2', title: 'Implementación',   desc: 'Configuración del campus virtual, carga de usuarios y tramitación completa SENCE' },
-              { icon: <GraduationCap className="w-10 h-10 text-white" />,bg: C.accent,    step: 'PASO 3', title: 'Capacitación',     desc: 'Ejecución de programas con tutores expertos, soporte técnico y seguimiento constante' },
-              { icon: <BarChart3 className="w-10 h-10 text-white" />,   bg: C.primary,    step: 'PASO 4', title: 'Reportes SENCE',   desc: 'Documentación completa, certificados y gestión de reembolso franquicia tributaria' },
-            ].map((s) => (
-              <div key={s.step} className="text-center">
-                <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6" style={{ backgroundColor: s.bg, boxShadow: S.lg }}>{s.icon}</div>
-                <div className="text-sm font-semibold mb-2" style={{ color: C.accent }}>{s.step}</div>
-                <h3 className="text-xl font-semibold mb-3" style={{ color: C.textPrimary }}>{s.title}</h3>
-                <p style={{ color: C.textSecondary }}>{s.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+  return (
+    <motion.section
+      className="py-20"
+      style={{ backgroundColor: C.bgLight }}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true }}
+    >
+      <div className="container mx-auto px-4 lg:px-8">
+        <div className="max-w-6xl mx-auto">
+          <motion.div className="text-center mb-12" variants={fadeInUp}>
+            <Badge className="mb-4" style={{ backgroundColor: C.primaryLight, color: C.primary }}>Sobre Nosotros</Badge>
+            <h2 className="text-3xl md:text-4xl font-bold mb-6" style={{ color: C.primary }}>Nuestra Historia</h2>
+            <p className="text-lg max-w-3xl mx-auto leading-relaxed" style={{ color: C.textSecondary }}>
+              Desde nuestros inicios, hemos trabajado con la convicción de que la capacitación
+              profesional es la clave para el crecimiento personal y empresarial. Como OTEC
+              certificada bajo la norma NCh 2728:2015 y acreditada por el SENCE, nos
+              enorgullecemos de ofrecer formación de excelencia que transforma vidas y organizaciones.
+            </p>
+          </motion.div>
 
-      {/* ── SENCE ── */}
-      <section id="sence" className="py-20" style={{ backgroundColor: C.primaryLight }}>
-        <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <Badge className="mb-6" style={{ backgroundColor: 'white', color: C.primary, border: 'none' }}>
-                <Shield className="w-3 h-3 mr-1" /> Certificación Oficial
-              </Badge>
-              <h2 className="text-4xl lg:text-5xl font-bold mb-6" style={{ color: C.primary }}>Gestión SENCE 100% Garantizada</h2>
-              <p className="text-xl mb-8" style={{ color: C.textPrimary }}>Como OTEC certificada, gestionamos íntegramente tu franquicia tributaria SENCE. Recupera hasta el 100% de tu inversión en capacitación.</p>
-
-              <div className="space-y-4 mb-8">
-                {[
-                  { icon: <FileCheck className="w-6 h-6 text-white" />, title: 'Tramitación Completa',    desc: 'Nos encargamos de toda la documentación y seguimiento ante SENCE' },
-                  { icon: <Clock className="w-6 h-6 text-white" />,     title: 'Seguimiento Automático',  desc: 'Control de asistencia y avance integrado en el Campus Virtual' },
-                  { icon: <Award className="w-6 h-6 text-white" />,     title: 'Certificación Oficial',   desc: 'Certificados digitales y físicos con validez nacional' },
-                ].map((item) => (
-                  <div key={item.title} className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: C.primary }}>{item.icon}</div>
-                    <div>
-                      <h4 className="font-semibold mb-1" style={{ color: C.textPrimary }}>{item.title}</h4>
-                      <p style={{ color: C.textSecondary }}>{item.desc}</p>
-                    </div>
+          <motion.div className="mb-12" variants={fadeInUp}>
+            <Card className="overflow-hidden border-2" style={{ borderColor: C.border }}>
+              <div
+                className="relative aspect-video flex items-center justify-center group cursor-pointer"
+                style={{ background: `linear-gradient(135deg, ${C.primary} 0%, ${C.secondary} 100%)` }}
+              >
+                <div className="absolute inset-0 opacity-10">
+                  <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '40px 40px' }} />
+                </div>
+                <motion.div className="relative z-10" whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+                  <div className="w-20 h-20 rounded-full flex items-center justify-center shadow-2xl" style={{ backgroundColor: 'rgba(255,255,255,0.95)' }}>
+                    <Play className="w-10 h-10 ml-1" style={{ color: C.accent }} fill={C.accent} />
                   </div>
-                ))}
-              </div>
-
-              <Button size="lg" className="px-8" style={{ backgroundColor: C.accent, color: 'white' }}>
-                <MessageSquare className="w-5 h-5 mr-2" /> Hablar con Especialista SENCE
-              </Button>
-            </div>
-
-            <Card className="p-8" style={{ backgroundColor: 'white', border: 'none', boxShadow: S['2xl'] }}>
-              <h3 className="text-2xl font-semibold mb-6" style={{ color: C.textPrimary }}>Beneficios Franquicia SENCE</h3>
-              <div className="space-y-6">
-                <div>
-                  <div className="flex justify-between items-center mb-2">
-                    <span style={{ color: C.textSecondary }}>Recuperación inversión</span>
-                    <span className="font-bold text-2xl" style={{ color: C.accent }}>100%</span>
-                  </div>
-                  <div className="h-2 rounded-full" style={{ backgroundColor: C.bgLight }}>
-                    <div className="h-full rounded-full" style={{ backgroundColor: C.accent, width: '100%' }} />
+                </motion.div>
+                <div className="absolute inset-0 flex items-end p-8 bg-gradient-to-t from-black/60 to-transparent">
+                  <div className="text-white">
+                    <p className="text-2xl font-bold mb-2">Conoce nuestra historia</p>
+                    <p className="text-sm opacity-90">Video institucional • 3:45 min</p>
                   </div>
                 </div>
-                <div className="border-t pt-6" style={{ borderColor: C.border }}>
-                  <h4 className="font-semibold mb-4" style={{ color: C.textPrimary }}>Incluye:</h4>
-                  <ul className="space-y-3">
-                    {['Acompañamiento en disponibilidad presupuestaria', 'Inscripción y cierre de códigos SENCE', 'Seguimiento normativo automatizado', 'Documentación y respaldo ante fiscalización', 'Emisión de certificados oficiales'].map((item) => (
-                      <li key={item} className="flex items-center gap-2">
-                        <CheckCircle className="w-5 h-5" style={{ color: C.success }} />
-                        <span style={{ color: C.textSecondary }}>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div className="p-4 rounded-xl" style={{ backgroundColor: C.accentLight }}>
-                  <div className="flex items-center gap-3">
-                    <Download className="w-6 h-6" style={{ color: C.accent }} />
-                    <div>
-                      <div className="font-semibold" style={{ color: C.textPrimary }}>Guía SENCE 2025</div>
-                      <div className="text-sm" style={{ color: C.textSecondary }}>Descarga nuestra guía completa</div>
-                    </div>
-                  </div>
+                <div className="absolute top-4 right-4">
+                  <Badge className="text-xs px-3 py-1" style={{ backgroundColor: C.accent, color: 'white' }}>Video próximamente</Badge>
                 </div>
               </div>
             </Card>
-          </div>
-        </div>
-      </section>
+          </motion.div>
 
-      {/* ── Cursos Destacados ── */}
-      <section id="cursos" className="py-20" style={{ backgroundColor: C.bgLight }}>
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <Badge className="mb-4" style={{ backgroundColor: C.accentLight, color: C.accent, border: 'none' }}>Programas Certificados</Badge>
-            <h2 className="text-4xl lg:text-5xl font-bold mb-4" style={{ color: C.textPrimary }}>Cursos Destacados</h2>
-            <p className="text-xl max-w-3xl mx-auto" style={{ color: C.textSecondary }}>Programas certificados SENCE en las áreas más demandadas del mercado</p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-            {featuredCourses.map((course) => (
-              <Card key={course.title} className="overflow-hidden hover:scale-105 transition-transform cursor-pointer" style={{ backgroundColor: 'white', border: `1px solid ${C.border}`, boxShadow: S.md }}>
-                <div className="h-40 flex items-center justify-center" style={{ backgroundColor: C.bgLight }}>
-                  <BookOpen className="w-16 h-16" style={{ color: C.primary }} />
-                </div>
-                <div className="p-6">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Badge variant="outline" style={{ borderColor: C.accent, color: C.accent, fontSize: '0.75rem' }}>{course.category}</Badge>
-                    {course.sence && <Badge style={{ backgroundColor: C.successLight, color: C.success, border: 'none', fontSize: '0.75rem' }}>SENCE</Badge>}
-                  </div>
-                  <h3 className="text-lg font-semibold mb-2" style={{ color: C.textPrimary }}>{course.title}</h3>
-                  <div className="space-y-2 mb-4">
-                    <div className="flex items-center gap-2 text-sm" style={{ color: C.textSecondary }}><Clock className="w-4 h-4" />{course.duration}</div>
-                    <div className="flex items-center gap-2 text-sm" style={{ color: C.textSecondary }}><Users className="w-4 h-4" />{course.students.toLocaleString()} alumnos</div>
-                    <div className="flex items-center gap-2 text-sm" style={{ color: C.textSecondary }}><Star className="w-4 h-4" style={{ color: C.accent }} />{course.rating} / 5.0</div>
-                  </div>
-                  <Button className="w-full" variant="outline" style={{ borderColor: C.primary, color: C.primary }}>Ver detalles</Button>
-                </div>
-              </Card>
+          <motion.div className="grid grid-cols-2 md:grid-cols-4 gap-6" variants={staggerChildren}>
+            {stats.map((stat, idx) => (
+              <motion.div key={idx} variants={fadeInUp}>
+                <motion.div whileHover={{ y: -8 }} transition={{ duration: 0.3 }}>
+                  <Card className="p-6 text-center border-2 hover:shadow-lg transition-shadow" style={{ borderColor: C.border }}>
+                    <motion.div className="mb-4" whileHover={{ rotate: 360 }} transition={{ duration: 0.6 }}>
+                      <stat.icon className="w-10 h-10 mx-auto" style={{ color: stat.color }} />
+                    </motion.div>
+                    <div className="text-3xl font-bold mb-2" style={{ color: C.primary }}>{stat.value}</div>
+                    <div className="text-sm font-medium" style={{ color: C.textSecondary }}>{stat.label}</div>
+                  </Card>
+                </motion.div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
 
-          <div className="text-center">
-            <Button size="lg" style={{ backgroundColor: C.primary, color: 'white' }} asChild>
-              <Link href="/cursos">Ver Catálogo Completo <ChevronRight className="w-5 h-5 ml-2" /></Link>
-            </Button>
-          </div>
+          <motion.div className="mt-12 text-center" variants={fadeInUp}>
+            <p className="text-base max-w-3xl mx-auto leading-relaxed" style={{ color: C.textSecondary }}>
+              Nuestro compromiso va más allá de la enseñanza: acompañamos a cada empresa y persona
+              en su proceso de transformación, entregando herramientas concretas, certificaciones
+              válidas y un seguimiento personalizado que garantiza resultados medibles.
+            </p>
+          </motion.div>
         </div>
-      </section>
+      </div>
+    </motion.section>
+  );
+}
 
-      {/* ── Impacto ── */}
-      <section id="casos" className="py-20" style={{ backgroundColor: C.primary }}>
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <Badge className="mb-4" style={{ backgroundColor: C.primaryLight, color: C.primary, border: 'none' }}>Resultados Reales</Badge>
-            <h2 className="text-4xl lg:text-5xl font-bold mb-4" style={{ color: 'white' }}>Impacto Comprobado</h2>
-            <p className="text-xl max-w-3xl mx-auto" style={{ color: 'rgba(255,255,255,.8)' }}>Empresas líderes confían en nosotros para desarrollar su talento</p>
-          </div>
+// ─── Main Page ───────────────────────────────────────────────────────────────
+export default function HomePage() {
+  const router = useRouter();
+  const { scrollYProgress } = useScroll();
+  const scrollOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
 
-          <div className="grid md:grid-cols-3 gap-8 mb-16">
-            {[
-              { icon: <TrendingUp className="w-8 h-8" style={{ color: C.primary }} />, bg: C.primaryLight, value: '+35%', color: C.primary,   label: 'Aumento promedio en productividad' },
-              { icon: <Users className="w-8 h-8" style={{ color: C.accent }} />,       bg: C.accentLight,  value: '95%',   color: C.accent,    label: 'Tasa de Satisfacción' },
-              { icon: <Award className="w-8 h-8" style={{ color: C.secondary }} />,    bg: C.secondaryLight,value: '92%',  color: C.secondary, label: 'Tasa de aprobación de cursos' },
-            ].map((s) => (
-              <Card key={s.label} className="p-8 text-center" style={{ backgroundColor: 'white', border: 'none', boxShadow: S.lg }}>
-                <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: s.bg }}>{s.icon}</div>
-                <div className="text-4xl font-bold mb-2" style={{ color: s.color }}>{s.value}</div>
-                <p style={{ color: C.textSecondary }}>{s.label}</p>
-              </Card>
-            ))}
-          </div>
+  const navigate = (page: string) => {
+    const routes: Record<string, string> = {
+      home: '/',
+      nosotros: '/nosotros',
+      empresas: '/empresas',
+      ate: '/sence',
+      'educacion-continua': '/educacion-continua',
+      cursos: '/cursos',
+      eventos: '/eventos',
+      contacto: '/contacto',
+      checkout: '/checkout',
+    };
+    router.push(routes[page] ?? `/${page}`);
+  };
 
-          <div className="text-center">
-            <h3 className="text-2xl font-semibold mb-8" style={{ color: 'white' }}>Sectores que confían en nosotros</h3>
-            <div className="flex flex-wrap justify-center gap-6">
-              {['Minería', 'Retail', 'Construcción', 'Salud', 'Tecnología', 'Manufactura', 'Servicios', 'Educación'].map((sector) => (
-                <div key={sector} className="px-6 py-3 rounded-lg" style={{ backgroundColor: 'white', border: `1px solid ${C.border}` }}>
-                  <span style={{ color: C.textPrimary }}>{sector}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
+  return (
+    <div className="min-h-screen" style={{ backgroundColor: C.bgLight }}>
 
-      {/* ── Testimonios ── */}
-      <section className="py-20" style={{ backgroundColor: 'white' }}>
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <Badge className="mb-4" style={{ backgroundColor: C.accentLight, color: C.accent, border: 'none' }}>Testimonios</Badge>
-            <h2 className="text-4xl lg:text-5xl font-bold mb-4" style={{ color: C.textPrimary }}>Lo que dicen nuestros clientes</h2>
-          </div>
-
-          <div className="max-w-4xl mx-auto">
-            <Card className="p-12" style={{ backgroundColor: C.bgLight, border: 'none', boxShadow: S.xl }}>
-              <Quote className="w-12 h-12 mb-6" style={{ color: C.accent }} />
-              <p className="text-2xl mb-8 leading-relaxed" style={{ color: C.textPrimary }}>"{testimonials[testimonialIndex].text}"</p>
-              <div className="flex items-center gap-4">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={testimonials[testimonialIndex].image} alt={testimonials[testimonialIndex].name} className="w-16 h-16 rounded-full" />
-                <div>
-                  <div className="font-semibold text-lg" style={{ color: C.textPrimary }}>{testimonials[testimonialIndex].name}</div>
-                  <div style={{ color: C.textSecondary }}>{testimonials[testimonialIndex].position}</div>
-                  <div className="text-sm" style={{ color: C.accent }}>{testimonials[testimonialIndex].company}</div>
-                </div>
-              </div>
-            </Card>
-
-            <div className="flex justify-center gap-4 mt-8">
-              <button onClick={prev} className="w-12 h-12 rounded-full flex items-center justify-center transition-all hover:scale-110" style={{ backgroundColor: C.primary, boxShadow: S.md }}>
-                <ChevronLeft className="w-6 h-6 text-white" />
-              </button>
-              <button onClick={next} className="w-12 h-12 rounded-full flex items-center justify-center transition-all hover:scale-110" style={{ backgroundColor: C.primary, boxShadow: S.md }}>
-                <ChevronRight className="w-6 h-6 text-white" />
-              </button>
-            </div>
-
-            <div className="flex justify-center gap-2 mt-6">
-              {testimonials.map((_, i) => (
-                <button key={i} onClick={() => setTestimonialIndex(i)} className="w-3 h-3 rounded-full transition-all" style={{ backgroundColor: i === testimonialIndex ? C.accent : C.border }} />
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── FAQ ── */}
-      <section className="py-20" style={{ backgroundColor: C.primaryLight }}>
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <Badge className="mb-4" style={{ backgroundColor: C.secondaryLight, color: C.secondary, border: 'none' }}>Preguntas Frecuentes</Badge>
-            <h2 className="text-4xl lg:text-5xl font-bold mb-4" style={{ color: C.textPrimary }}>Resolvemos tus dudas</h2>
-          </div>
-
-          <div className="max-w-3xl mx-auto space-y-4">
-            {faqs.map((faq, i) => (
-              <Card key={i} className="overflow-hidden" style={{ backgroundColor: 'white', border: `1px solid ${C.border}` }}>
-                <button onClick={() => setFaqOpen(faqOpen === i ? null : i)} className="w-full p-6 text-left flex items-center justify-between hover:bg-gray-50 transition-all">
-                  <span className="text-lg font-semibold pr-4" style={{ color: C.textPrimary }}>{faq.question}</span>
-                  <ChevronRight className={`w-6 h-6 flex-shrink-0 transition-transform ${faqOpen === i ? 'rotate-90' : ''}`} style={{ color: C.accent }} />
-                </button>
-                {faqOpen === i && <div className="px-6 pb-6" style={{ color: C.textSecondary }}>{faq.answer}</div>}
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── CTA / Contacto ── */}
-      <section id="contacto" className="py-20 relative overflow-hidden" style={{ backgroundColor: C.primary }}>
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 right-0 w-96 h-96 rounded-full blur-3xl" style={{ backgroundColor: C.accent }} />
-          <div className="absolute bottom-0 left-0 w-96 h-96 rounded-full blur-3xl" style={{ backgroundColor: C.secondary }} />
+      {/* ── HERO ── */}
+      <motion.section
+        className="relative overflow-hidden"
+        style={{ backgroundColor: C.primary }}
+        initial="hidden"
+        animate="visible"
+      >
+        <div className="absolute inset-0 opacity-10 pointer-events-none">
+          <motion.div
+            className="absolute top-20 right-20 w-96 h-96 rounded-full blur-3xl"
+            style={{ backgroundColor: C.accent }}
+            animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
+            transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+          />
+          <motion.div
+            className="absolute bottom-20 left-20 w-96 h-96 rounded-full blur-3xl"
+            style={{ backgroundColor: C.secondary }}
+            animate={{ scale: [1.2, 1, 1.2], opacity: [0.2, 0.4, 0.2] }}
+            transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
+          />
         </div>
 
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-4xl lg:text-5xl font-bold mb-6" style={{ color: 'white' }}>Transforma el futuro de tu empresa hoy</h2>
-            <p className="text-xl mb-12" style={{ color: 'rgba(255,255,255,.8)' }}>Agenda una demo personalizada y descubre cómo nuestro Campus Virtual puede revolucionar la capacitación en tu organización</p>
+        <div className="container mx-auto px-4 lg:px-8 py-24 lg:py-40 relative z-10">
+          <div className="max-w-6xl mx-auto">
+            <motion.div className="text-center mb-16" variants={fadeInUp}>
 
-            <div className="grid md:grid-cols-2 gap-8 mb-12">
-              <Card className="p-8 text-left" style={{ backgroundColor: 'white', border: 'none', boxShadow: S['2xl'] }}>
-                <h3 className="text-2xl font-semibold mb-6" style={{ color: C.textPrimary }}>Agendar Demo</h3>
-                <form className="space-y-4">
-                  {[
-                    { label: 'Nombre completo',   type: 'text',  placeholder: 'Juan Pérez' },
-                    { label: 'Email corporativo',  type: 'email', placeholder: 'juan@empresa.cl' },
-                    { label: 'Empresa',            type: 'text',  placeholder: 'Nombre de la empresa' },
-                    { label: 'Teléfono',           type: 'tel',   placeholder: '+56 9 5522 2430' },
-                  ].map((f) => (
-                    <div key={f.label}>
-                      <label className="block text-sm font-medium mb-2" style={{ color: C.textPrimary }}>{f.label}</label>
-                      <input type={f.type} placeholder={f.placeholder} className="w-full px-4 py-3 rounded-lg outline-none focus:ring-2" style={{ border: `1px solid ${C.border}`, backgroundColor: C.bgLight }} />
-                    </div>
-                  ))}
-                  <Button type="submit" className="w-full py-6 text-lg" style={{ backgroundColor: C.accent, color: 'white' }}>
-                    Agendar Demo Gratuita <Calendar className="w-5 h-5 ml-2" />
-                  </Button>
-                </form>
-              </Card>
+              <motion.div
+                initial={{ scale: 0, rotate: -180 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ duration: 0.6, ease: 'easeOut', delay: 0.2 }}
+              >
+                <Badge
+                  variant="outline"
+                  className="mb-8 text-sm px-5 py-2.5 border-2 inline-flex items-center gap-2"
+                  style={{ borderColor: C.accent, color: 'white', backgroundColor: 'rgba(243,108,33,0.15)' }}
+                >
+                  <Shield className="w-4 h-4" />
+                  OTEC Certificada NCh 2728:2015 • Acreditada por SENCE
+                </Badge>
+              </motion.div>
 
-              <div className="space-y-6">
+              <motion.div
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.3 }}
+              >
+                <h1
+                  className="text-5xl md:text-6xl lg:text-8xl font-bold mb-6 text-white leading-tight"
+                  style={{ letterSpacing: '-0.02em' }}
+                >
+                  EL PODER DE{' '}
+                  <motion.span
+                    className="inline-block"
+                    style={{ color: C.accent }}
+                    animate={{
+                      textShadow: [
+                        '0 0 20px rgba(243,108,33,0)',
+                        '0 0 20px rgba(243,108,33,0.3)',
+                        '0 0 20px rgba(243,108,33,0)',
+                      ],
+                    }}
+                    transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                  >
+                    CREAR
+                  </motion.span>
+                </h1>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.5 }}
+              >
+                <p
+                  className="text-3xl md:text-4xl lg:text-5xl font-bold mb-10 text-white/95"
+                  style={{ fontStyle: 'italic', letterSpacing: '0.01em', lineHeight: '1.3' }}
+                >
+                  Aprendes hoy,{' '}
+                  <span style={{ color: C.accent }}>lideras mañana</span>
+                </p>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.7 }}
+              >
+                <p className="text-xl md:text-2xl text-white/90 mb-16 max-w-4xl mx-auto leading-relaxed">
+                  Capacitación profesional para empresas y organizaciones,{' '}
+                  <strong>con enfoque en calidad, pertinencia y desarrollo de competencias.</strong>
+                </p>
+              </motion.div>
+
+              <motion.div
+                className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 mb-16 max-w-4xl mx-auto"
+                initial="hidden"
+                animate="visible"
+                variants={staggerChildren}
+              >
                 {[
-                  { icon: <Phone className="w-6 h-6 text-white" />,  title: 'Teléfono', line1: '+56 9 3380 1355',           line2: 'Lun - Vie: 9:00 - 13:00 hrs' },
-                  { icon: <Mail className="w-6 h-6 text-white" />,   title: 'Email',    line1: 'contacto@elpoderdecrear.cl', line2: 'Respuesta en 24 hrs' },
-                  { icon: <MapPin className="w-6 h-6 text-white" />, title: 'Oficina',  line1: 'Rengo 351, Los Ángeles',     line2: 'Edificio Asturias' },
-                ].map((c) => (
-                  <Card key={c.title} className="p-6" style={{ backgroundColor: 'rgba(255,255,255,.1)', border: '1px solid rgba(255,255,255,.2)', backdropFilter: 'blur(10px)' }}>
-                    <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: C.accent }}>{c.icon}</div>
-                      <div>
-                        <h4 className="font-semibold mb-1" style={{ color: 'white' }}>{c.title}</h4>
-                        <p style={{ color: 'rgba(255,255,255,.8)' }}>{c.line1}</p>
-                        <p className="text-sm" style={{ color: 'rgba(255,255,255,.6)' }}>{c.line2}</p>
-                      </div>
+                  { value: 'Ley 19.518', label: 'Franquicia Tributaria', icon: Award },
+                  { value: '95%', label: 'Satisfacción', icon: Star },
+                  { value: '100%', label: 'Compromiso con calidad', icon: Shield },
+                  { value: '24/7', label: 'Soporte continuo', icon: Users },
+                ].map((stat, index) => (
+                  <motion.div key={index} variants={fadeInUp} className="text-center">
+                    <stat.icon className="w-8 h-8 mx-auto mb-3" style={{ color: C.accent }} />
+                    <div className="text-3xl md:text-4xl font-bold text-white mb-1">{stat.value}</div>
+                    <div className="text-sm text-white/70">{stat.label}</div>
+                  </motion.div>
+                ))}
+              </motion.div>
+            </motion.div>
+
+            {/* Dual CTA cards */}
+            <motion.div
+              className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto"
+              variants={staggerChildren}
+              initial="hidden"
+              animate="visible"
+            >
+              <motion.div variants={fadeInUp}>
+                <motion.div whileHover="hover" initial="rest" variants={scaleOnHover}>
+                  <Card
+                    className="p-8 cursor-pointer group relative overflow-hidden border-2 h-full"
+                    style={{ backgroundColor: 'white', borderColor: C.primary }}
+                    onClick={() => navigate('empresas')}
+                  >
+                    <motion.div
+                      className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-300"
+                      style={{ background: `linear-gradient(135deg, ${C.primary}, ${C.accent})` }}
+                    />
+                    <div className="relative z-10">
+                      <Building2 className="w-12 h-12 mb-4" style={{ color: C.primary }} />
+                      <h3 className="text-2xl font-bold mb-3" style={{ color: C.primary }}>Para Empresas</h3>
+                      <p className="text-base mb-6" style={{ color: C.textSecondary }}>
+                        Capacitación corporativa, diagnóstico, propuestas a medida
+                        y gestión completa con respaldo SENCE
+                      </p>
+                      <ul className="space-y-3 mb-6">
+                        {['Programas personalizados', 'Financiamiento SENCE', 'Reportería y certificación', 'Acompañamiento especializado'].map((item, idx) => (
+                          <li key={idx} className="flex items-center gap-2">
+                            <CheckCircle className="w-5 h-5 flex-shrink-0" style={{ color: C.accent }} />
+                            <span className="text-sm" style={{ color: C.textPrimary }}>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                      <Button className="w-full" style={{ backgroundColor: C.primary, color: 'white' }}>
+                        Cotizar Capacitación
+                        <motion.span
+                          className="inline-block ml-2"
+                          animate={{ x: [0, 5, 0] }}
+                          transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+                        >
+                          <ArrowRight className="w-4 h-4" />
+                        </motion.span>
+                      </Button>
                     </div>
                   </Card>
-                ))}
-              </div>
-            </div>
+                </motion.div>
+              </motion.div>
+
+              <motion.div variants={fadeInUp}>
+                <motion.div whileHover="hover" initial="rest" variants={scaleOnHover}>
+                  <Card
+                    className="p-8 cursor-pointer group relative overflow-hidden border-2 h-full"
+                    style={{ backgroundColor: 'white', borderColor: C.accent }}
+                    onClick={() => navigate('educacion-continua')}
+                  >
+                    <motion.div
+                      className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-300"
+                      style={{ background: `linear-gradient(135deg, ${C.accent}, ${C.secondary})` }}
+                    />
+                    <div className="relative z-10">
+                      <GraduationCap className="w-12 h-12 mb-4" style={{ color: C.accent }} />
+                      <h3 className="text-2xl font-bold mb-3" style={{ color: C.accent }}>Educación Continua</h3>
+                      <p className="text-base mb-6" style={{ color: C.textSecondary }}>
+                        Cursos individuales para tu crecimiento profesional,
+                        con certificación válida y acceso a plataforma
+                      </p>
+                      <ul className="space-y-3 mb-6">
+                        {['Inscripción individual', 'Certificación oficial', 'Horarios flexibles', 'Plataforma 24/7'].map((item, idx) => (
+                          <li key={idx} className="flex items-center gap-2">
+                            <CheckCircle className="w-5 h-5 flex-shrink-0" style={{ color: C.primary }} />
+                            <span className="text-sm" style={{ color: C.textPrimary }}>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                      <Button className="w-full" style={{ backgroundColor: C.accent, color: 'white' }}>
+                        Ver Cursos
+                        <motion.span
+                          className="inline-block ml-2"
+                          animate={{ x: [0, 5, 0] }}
+                          transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+                        >
+                          <ArrowRight className="w-4 h-4" />
+                        </motion.span>
+                      </Button>
+                    </div>
+                  </Card>
+                </motion.div>
+              </motion.div>
+            </motion.div>
           </div>
         </div>
-      </section>
+
+        <motion.div
+          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+          style={{ opacity: scrollOpacity }}
+          animate={{ y: [0, 10, 0] }}
+          transition={{ duration: 2, repeat: Infinity }}
+        >
+          <div className="w-6 h-10 border-2 border-white/50 rounded-full flex justify-center pt-2">
+            <div className="w-1 h-3 bg-white/50 rounded-full" />
+          </div>
+        </motion.div>
+      </motion.section>
+
+      {/* ── CLIENTES ── */}
+      <TrustedCompanies />
+
+      {/* ── PROVEEDORES DEL ESTADO ── */}
+      <motion.section
+        className="py-16 border-y"
+        style={{ backgroundColor: C.primaryLight, borderColor: C.border }}
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+      >
+        <div className="container mx-auto px-4 lg:px-8">
+          <div className="max-w-4xl mx-auto text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              <Badge className="mb-4" style={{ backgroundColor: C.primary, color: 'white', fontSize: '0.875rem', padding: '0.5rem 1.5rem' }}>
+                <Shield className="w-4 h-4 mr-2 inline-block" />
+                Proveedor Oficial
+              </Badge>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: C.textPrimary }}>
+                Somos Proveedores del Estado
+              </h2>
+              <p className="text-lg md:text-xl mb-6" style={{ color: C.textSecondary }}>
+                Organismo Técnico de Capacitación certificado y acreditado para brindar servicios
+                de formación a instituciones públicas y organismos estatales en Chile.
+              </p>
+              <div className="flex flex-wrap justify-center gap-6 mt-8">
+                {['Certificación NCh 2728:2015', 'Acreditación SENCE', 'Experiencia en sector público'].map((text) => (
+                  <div key={text} className="flex items-center gap-2">
+                    <CheckCircle className="w-5 h-5" style={{ color: C.accent }} />
+                    <span style={{ color: C.textSecondary }}>{text}</span>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </motion.section>
+
+      {/* ── NUESTRA HISTORIA ── */}
+      <OurHistory />
+
+      {/* ── SOLUCIONES CON TABS ── */}
+      <motion.section
+        className="py-20"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+      >
+        <div className="container mx-auto px-4 lg:px-8">
+          <motion.div
+            className="text-center mb-12"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <Badge className="mb-4" style={{ backgroundColor: C.primaryLight, color: C.primary }}>
+              Nuestras Soluciones
+            </Badge>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: C.primary }}>
+              Capacitación para cada necesidad
+            </h2>
+            <p className="text-lg max-w-2xl mx-auto" style={{ color: C.textSecondary }}>
+              Elige el camino que mejor se adapte a tus objetivos de formación
+            </p>
+          </motion.div>
+
+          <Tabs defaultValue="empresas" className="max-w-6xl mx-auto">
+            <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-12">
+              <TabsTrigger value="empresas" className="text-base">
+                <Building2 className="w-4 h-4 mr-2" />
+                Empresas
+              </TabsTrigger>
+              <TabsTrigger value="personas" className="text-base">
+                <GraduationCap className="w-4 h-4 mr-2" />
+                Personas
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="empresas">
+              <motion.div className="grid md:grid-cols-3 gap-6" variants={staggerChildren} initial="hidden" animate="visible">
+                {[
+                  { icon: Target, title: 'Diagnóstico', description: 'Evaluamos las necesidades de capacitación de tu equipo', color: C.primary },
+                  { icon: BookOpen, title: 'Propuesta a Medida', description: 'Diseñamos programas personalizados para tus objetivos', color: C.secondary },
+                  { icon: TrendingUp, title: 'Ejecución y Reportes', description: 'Gestión completa con seguimiento y certificación', color: C.accent },
+                ].map((item, idx) => (
+                  <motion.div key={idx} variants={fadeInUp}>
+                    <motion.div whileHover={{ y: -8 }} transition={{ duration: 0.3 }}>
+                      <Card className="p-6 h-full border-2 hover:shadow-lg transition-shadow">
+                        <motion.div className="mb-4" whileHover={{ scale: 1.1, rotate: 5 }}>
+                          <item.icon className="w-12 h-12" style={{ color: item.color }} />
+                        </motion.div>
+                        <h3 className="text-xl font-bold mb-3" style={{ color: C.textPrimary }}>{item.title}</h3>
+                        <p style={{ color: C.textSecondary }}>{item.description}</p>
+                      </Card>
+                    </motion.div>
+                  </motion.div>
+                ))}
+              </motion.div>
+            </TabsContent>
+
+            <TabsContent value="personas">
+              <motion.div className="grid md:grid-cols-3 gap-6" variants={staggerChildren} initial="hidden" animate="visible">
+                {[
+                  { icon: Sparkles, title: 'Elige tu Curso', description: 'Catálogo actualizado con cursos certificados', color: C.accent },
+                  { icon: Play, title: 'Aprende Online', description: 'Acceso 24/7 a nuestra plataforma LUMEN', color: C.secondary },
+                  { icon: Award, title: 'Certifícate', description: 'Obtén certificación oficial validada', color: C.primary },
+                ].map((item, idx) => (
+                  <motion.div key={idx} variants={fadeInUp}>
+                    <motion.div whileHover={{ y: -8 }} transition={{ duration: 0.3 }}>
+                      <Card className="p-6 h-full border-2 hover:shadow-lg transition-shadow">
+                        <motion.div className="mb-4" whileHover={{ scale: 1.1, rotate: -5 }}>
+                          <item.icon className="w-12 h-12" style={{ color: item.color }} />
+                        </motion.div>
+                        <h3 className="text-xl font-bold mb-3" style={{ color: C.textPrimary }}>{item.title}</h3>
+                        <p style={{ color: C.textSecondary }}>{item.description}</p>
+                      </Card>
+                    </motion.div>
+                  </motion.div>
+                ))}
+              </motion.div>
+            </TabsContent>
+          </Tabs>
+        </div>
+      </motion.section>
+
+      {/* ── CTA FINAL ── */}
+      <motion.section
+        className="py-20"
+        style={{ background: `linear-gradient(135deg, ${C.primary} 0%, ${C.secondary} 100%)` }}
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+      >
+        <div className="container mx-auto px-4 lg:px-8">
+          <div className="max-w-4xl mx-auto text-center">
+            <motion.h2
+              className="text-3xl md:text-4xl font-bold mb-6 text-white"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              ¿Listo para comenzar?
+            </motion.h2>
+            <motion.p
+              className="text-lg text-white/90 mb-8"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+            >
+              Contáctanos y descubre cómo podemos ayudarte a alcanzar tus objetivos
+            </motion.p>
+            <motion.div
+              className="flex flex-col sm:flex-row gap-4 justify-center"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+            >
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Button size="lg" className="bg-white hover:bg-gray-100 font-semibold" style={{ color: C.primary }} asChild>
+                  <Link href="/empresas">
+                    Soy Empresa
+                    <ArrowRight className="ml-2 w-5 h-5" />
+                  </Link>
+                </Button>
+              </motion.div>
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border-2 font-semibold"
+                  style={{ borderColor: 'white', color: 'white', backgroundColor: 'transparent' }}
+                  asChild
+                >
+                  <Link href="/educacion-continua">
+                    Busco Curso Individual
+                    <ArrowRight className="ml-2 w-5 h-5" />
+                  </Link>
+                </Button>
+              </motion.div>
+            </motion.div>
+
+            <motion.div
+              className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-6 text-white/80"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.4 }}
+            >
+              <a href="tel:+56955222430" className="flex items-center gap-2 hover:text-white transition-colors">
+                <Phone className="w-4 h-4" />
+                +56 9 5522 2430
+              </a>
+              <span className="hidden sm:block opacity-40">|</span>
+              <a href="mailto:contacto@elpoderdecrear.cl" className="hover:text-white transition-colors">
+                contacto@elpoderdecrear.cl
+              </a>
+            </motion.div>
+          </div>
+        </div>
+      </motion.section>
 
     </div>
   );
