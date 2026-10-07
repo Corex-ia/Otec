@@ -966,217 +966,128 @@ export default function NewHomePageDynamic() {
               <div
                 className="relative hidden lg:block"
                 style={{
-                  height: "500px",
+                  height: "480px",
                   width: "100%",
-                  maxWidth: "700px",
+                  maxWidth: "680px",
                   margin: "0 auto",
                 }}
               >
-                {/* Card Logo OTEC - Lado Izquierdo */}
+                {/* Card Logo OTEC - Lado Izquierdo, centrado verticalmente */}
                 <motion.div
-                  className="absolute p-6 rounded-2xl shadow-2xl"
+                  className="absolute p-5 rounded-2xl shadow-2xl"
                   style={{
                     backgroundColor: "white",
                     border: `2px solid ${CorporateColors.borderLight}`,
-                    width: "280px",
-                    height: "280px",
+                    width: "220px",
+                    height: "220px",
                     top: "50%",
                     left: "0",
                     transform: "translateY(-50%)",
                     zIndex: 10,
                   }}
-                  animate={{
-                    y: [0, -10, 0],
-                  }}
-                  transition={{
-                    duration: 4,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
+                  animate={{ y: [0, -8, 0] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
                 >
                   <div className="w-full h-full flex items-center justify-center">
                     <img
                       src="/logo-otec.png"
                       alt="El Poder de Crear - OTEC"
                       className="w-full h-full"
-                      style={{
-                        objectFit: "contain",
-                        maxWidth: "100%",
-                        maxHeight: "100%",
-                      }}
+                      style={{ objectFit: "contain", maxWidth: "100%", maxHeight: "100%" }}
                     />
                   </div>
                 </motion.div>
 
-                {/* Card 1: Superior Derecha */}
+                {/* Grid 2×2 de cards info — columna izquierda: right:175px, columna derecha: right:5px */}
+
+                {/* Card A — arriba izquierda del grid: 95% Satisfacción (naranja) */}
                 <motion.div
                   className="absolute p-4 rounded-2xl shadow-xl"
                   style={{
                     background: "rgba(255, 107, 53, 0.15)",
                     backdropFilter: "blur(10px)",
                     border: "1px solid rgba(255, 107, 53, 0.3)",
-                    width: "200px",
-                    top: "20px",
-                    right: "0",
+                    width: "158px",
+                    top: "30px",
+                    right: "172px",
                     zIndex: 5,
                   }}
-                  animate={{
-                    y: [0, -12, 0],
-                  }}
-                  transition={{
-                    duration: 3.5,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                    delay: 0.5,
-                  }}
+                  animate={{ y: [0, -6, 0] }}
+                  transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
                 >
-                  <div
-                    className="w-12 h-12 rounded-xl flex items-center justify-center mb-3 mx-auto"
-                    style={{
-                      backgroundColor:
-                        "rgba(255, 107, 53, 0.3)",
-                    }}
-                  >
-                    <Star
-                      className="w-6 h-6"
-                      style={{ color: "#FF6B35" }}
-                    />
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-2 mx-auto" style={{ backgroundColor: "rgba(255, 107, 53, 0.3)" }}>
+                    <Star className="w-5 h-5" style={{ color: "#FF6B35" }} />
                   </div>
-                  <div className="text-2xl font-bold text-white text-center mb-1">
-                    95%
-                  </div>
-                  <div className="text-xs text-white/80 text-center leading-tight mb-2">
-                    Satisfacción
-                  </div>
-                  <div className="text-xs text-white/70 text-center leading-tight font-medium">
-                    Relatores especializados: Experiencia
-                    comprobable
-                  </div>
+                  <div className="text-xl font-bold text-white text-center mb-0.5">95%</div>
+                  <div className="text-xs text-white/80 text-center leading-tight mb-1">Satisfacción</div>
+                  <div className="text-xs text-white/70 text-center leading-tight">Relatores especializados</div>
                 </motion.div>
 
-                {/* Card 2: Centro Derecha */}
-                <motion.div
-                  className="absolute p-4 rounded-2xl shadow-xl"
-                  style={{
-                    background: "rgba(0, 217, 255, 0.15)",
-                    backdropFilter: "blur(10px)",
-                    border: "1px solid rgba(0, 217, 255, 0.3)",
-                    width: "190px",
-                    top: "50%",
-                    right: "40px",
-                    transform: "translateY(-50%)",
-                    zIndex: 5,
-                  }}
-                  animate={{
-                    x: [0, 10, 0],
-                  }}
-                  transition={{
-                    duration: 3.8,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                    delay: 1,
-                  }}
-                >
-                  <div
-                    className="w-12 h-12 rounded-xl flex items-center justify-center mb-3 mx-auto"
-                    style={{
-                      backgroundColor: "rgba(0, 217, 255, 0.3)",
-                    }}
-                  >
-                    <Target
-                      className="w-6 h-6"
-                      style={{ color: "#00D9FF" }}
-                    />
-                  </div>
-                  <div className="text-lg font-bold text-white text-center mb-1 leading-tight">
-                    Metodologías aplicadas
-                  </div>
-                  <div className="text-xs text-white/80 text-center leading-tight">
-                    Enfoque práctico
-                  </div>
-                </motion.div>
-
-                {/* Card 3: Inferior Derecha */}
-                <motion.div
-                  className="absolute p-4 rounded-2xl shadow-xl"
-                  style={{
-                    background: "rgba(230, 62, 150, 0.15)",
-                    backdropFilter: "blur(10px)",
-                    border: "1px solid rgba(230, 62, 150, 0.3)",
-                    width: "210px",
-                    bottom: "20px",
-                    right: "0",
-                    zIndex: 5,
-                  }}
-                  animate={{
-                    x: [0, -10, 0],
-                  }}
-                  transition={{
-                    duration: 3.3,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                    delay: 1.5,
-                  }}
-                >
-                  <div
-                    className="w-12 h-12 rounded-xl flex items-center justify-center mb-3 mx-auto"
-                    style={{
-                      backgroundColor:
-                        "rgba(230, 62, 150, 0.3)",
-                    }}
-                  >
-                    <Building2
-                      className="w-6 h-6"
-                      style={{ color: "#E63E96" }}
-                    />
-                  </div>
-                  <div className="text-lg font-bold text-white text-center mb-1 leading-tight">
-                    Experiencia multisectorial
-                  </div>
-                  <div className="text-xs text-white/80 text-center leading-tight">
-                    Público y privado
-                  </div>
-                </motion.div>
-
-                {/* Card 4: Superior Centro-Derecha */}
+                {/* Card B — arriba derecha del grid: Soporte Continuo (púrpura) */}
                 <motion.div
                   className="absolute p-4 rounded-2xl shadow-xl"
                   style={{
                     background: "rgba(107, 92, 231, 0.15)",
                     backdropFilter: "blur(10px)",
                     border: "1px solid rgba(107, 92, 231, 0.3)",
-                    width: "190px",
-                    top: "60px",
-                    left: "320px",
+                    width: "158px",
+                    top: "30px",
+                    right: "5px",
                     zIndex: 5,
                   }}
-                  animate={{
-                    y: [0, 10, 0],
-                  }}
-                  transition={{
-                    duration: 3.6,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                    delay: 0.8,
-                  }}
+                  animate={{ y: [0, 6, 0] }}
+                  transition={{ duration: 3.6, repeat: Infinity, ease: "easeInOut", delay: 0.8 }}
                 >
-                  <div
-                    className="w-12 h-12 rounded-xl flex items-center justify-center mb-3 mx-auto"
-                    style={{
-                      backgroundColor:
-                        "rgba(107, 92, 231, 0.3)",
-                    }}
-                  >
-                    <Users
-                      className="w-6 h-6"
-                      style={{ color: "#6B5CE7" }}
-                    />
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-2 mx-auto" style={{ backgroundColor: "rgba(107, 92, 231, 0.3)" }}>
+                    <Users className="w-5 h-5" style={{ color: "#6B5CE7" }} />
                   </div>
-                  <div className="text-xl font-bold text-white text-center mb-1">
-                    Soporte Continuo
+                  <div className="text-base font-bold text-white text-center mb-0.5 leading-tight">Soporte Continuo</div>
+                  <div className="text-xs text-white/80 text-center leading-tight">Acompañamiento permanente</div>
+                </motion.div>
+
+                {/* Card C — abajo izquierda del grid: Metodologías (cyan) */}
+                <motion.div
+                  className="absolute p-4 rounded-2xl shadow-xl"
+                  style={{
+                    background: "rgba(0, 217, 255, 0.15)",
+                    backdropFilter: "blur(10px)",
+                    border: "1px solid rgba(0, 217, 255, 0.3)",
+                    width: "158px",
+                    bottom: "30px",
+                    right: "172px",
+                    zIndex: 5,
+                  }}
+                  animate={{ x: [0, 5, 0] }}
+                  transition={{ duration: 3.8, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                >
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-2 mx-auto" style={{ backgroundColor: "rgba(0, 217, 255, 0.3)" }}>
+                    <Target className="w-5 h-5" style={{ color: "#00D9FF" }} />
                   </div>
+                  <div className="text-base font-bold text-white text-center mb-0.5 leading-tight">Metodologías aplicadas</div>
+                  <div className="text-xs text-white/80 text-center leading-tight">Enfoque práctico</div>
+                </motion.div>
+
+                {/* Card D — abajo derecha del grid: Experiencia multisectorial (rosa) */}
+                <motion.div
+                  className="absolute p-4 rounded-2xl shadow-xl"
+                  style={{
+                    background: "rgba(230, 62, 150, 0.15)",
+                    backdropFilter: "blur(10px)",
+                    border: "1px solid rgba(230, 62, 150, 0.3)",
+                    width: "158px",
+                    bottom: "30px",
+                    right: "5px",
+                    zIndex: 5,
+                  }}
+                  animate={{ x: [0, -5, 0] }}
+                  transition={{ duration: 3.3, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
+                >
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-2 mx-auto" style={{ backgroundColor: "rgba(230, 62, 150, 0.3)" }}>
+                    <Building2 className="w-5 h-5" style={{ color: "#E63E96" }} />
+                  </div>
+                  <div className="text-base font-bold text-white text-center mb-0.5 leading-tight">Experiencia multisectorial</div>
                   <div className="text-xs text-white/80 text-center leading-tight">
-                    Acompañamiento permanente
+                    Público y privado
                   </div>
                 </motion.div>
               </div>
